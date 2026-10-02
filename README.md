@@ -6,6 +6,10 @@ portable skillpacks, builds provider projections, and installs selected skills
 with local checks and rollback support. The compatible `skillpool` command is
 also retained.
 
+Version **0.4.0-alpha.0** is a GitHub source alpha;
+npm publication remains disabled. See the [alpha release notes](CHANGELOG.md)
+for the included behavior and known limits.
+
 ## The problem it solves
 
 Agent skills often arrive as Markdown files, but a reliable workflow also needs
@@ -31,11 +35,10 @@ Install Bun 1.3.14 or later before running the demo. The CLI uses Bun; Node.js
 and npm alone cannot execute it. Local rehearsals used Bun 1.3.14 and 1.4.2 on
 Linux. Native Windows and macOS validation remains pending.
 
-The included fixture runs locally and does not need a hosted service:
+The included fixture runs locally and does not need a hosted service. From a
+source checkout:
 
 ```bash
-git clone https://github.com/evandro-miguel/skills-manager.git
-cd skills-manager
 bun install --frozen-lockfile
 bun run validate:skillpack
 bun run build-projections
@@ -43,28 +46,57 @@ bun run validate-projections
 ```
 
 The demo validates `examples/minimal-skillpack`, writes generated files under
-`dist/projection-smoke`, and checks their metadata and digests. For an existing
-project, build projections inside it before installing a selected skill:
+`dist/projection-smoke`, and checks their metadata and digests. To try installation
+in a disposable project inside the checkout, run these commands in the same shell:
 
 ```bash
+PROJECT="$PWD/.tmp/skills-manager-demo"
+mkdir -p "$PROJECT"
+
 bun scripts/commands/skill-sys.ts build-projections \
   --source examples/minimal-skillpack \
   --providers all \
-  --out-dir /path/to/project/.skill-sys/projections \
-  --projection-store-dir /path/to/project/.tmp/projection-store \
+  --out-dir "$PROJECT/.skill-sys/projections" \
+  --projection-store-dir "$PROJECT/.tmp/projection-store" \
   --clean
 
 bun scripts/commands/skill-sys.ts install \
   --source examples/minimal-skillpack \
-  --project /path/to/project \
+  --project "$PROJECT" \
   --projection-dir .skill-sys/projections \
   --agent codex \
   --skill example-skill
 
 bun scripts/commands/skill-sys.ts doctor \
-  --project /path/to/project \
+  --project "$PROJECT" \
   --state-safety
 ```
+
+The selected skill is installed under the project's `.agents/skills`. To verify
+rollback, repeat the install once to create a backup of a completed installation,
+then restore it and check the resulting state:
+
+```bash
+PROJECT="$PWD/.tmp/skills-manager-demo"
+
+bun scripts/commands/skill-sys.ts install \
+  --source examples/minimal-skillpack \
+  --project "$PROJECT" \
+  --projection-dir .skill-sys/projections \
+  --agent codex \
+  --skill example-skill
+
+bun scripts/commands/skill-sys.ts rollback \
+  --project "$PROJECT" \
+  --target .agents/skills
+
+bun scripts/commands/skill-sys.ts doctor \
+  --project "$PROJECT" \
+  --state-safety
+```
+
+Rollback after the first installation alone has no previous managed version to
+restore. The demo leaves its project and backups under `.tmp/skills-manager-demo`.
 
 The projection directory must remain inside the selected project. User-root
 skills are excluded unless a command includes `--include-user`. When enabled,
@@ -75,8 +107,11 @@ skills are excluded unless a command includes `--include-user`. When enabled,
 
 Local checks cover synthetic skillpack validation, projection generation and
 validation, installation, state-safety checks, and rollback. The GitHub
-destination is planned as `evandro-miguel/skills-manager`; its hosted existence,
-visibility, and CI state have not been verified for this candidate.
+repository is [evandro-miguel/skills-manager](https://github.com/evandro-miguel/skills-manager).
+Check its release notes and Actions results for evidence at the selected revision.
+
+Provider projections are file artifacts. Their validation does not prove that
+an agent discovers, loads, or follows a skill in its live runtime.
 
 The package keeps `private: true`, so npm publication remains disabled. The
 manual npm publish workflow includes an `npm publish --provenance` path, but
@@ -104,7 +139,8 @@ Manager alongside the open Agent Skills ecosystem.
   projections out of the public package.
 - Use `examples/` for synthetic skillpacks and `SKILL_SYS_USER_ROOT` for
   user-local skills.
-- GitHub visibility and npm publication require separate owner approval.
+- The owner approved this GitHub source release. npm publication remains
+  separately gated and disabled.
 - The package name remains `universall-skill-sys`; the public CLI names remain
   `skill-sys` and `skillpool`.
 

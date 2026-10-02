@@ -2,7 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.4.0-alpha.0] - 2026-10-02
+
+Skills Manager's first public GitHub source alpha. The package
+name remains `universall-skill-sys`; `skill-sys` is the public CLI and
+`skillpool` remains compatible. npm publication remains disabled.
+
+The alpha provides skillpack validation, provider projection generation and
+validation, selected project installation, state diagnostics, and rollback of
+completed managed backups. It includes synthetic examples and the `skill-sys`
+operator skill. Private user catalogs remain outside the public repository and
+package; user-root projection input requires explicit opt-in.
+
+Bun 1.3.14 or later is required. The documented local journeys were exercised on
+Linux/WSL. Native Windows, native macOS and live provider discovery are not
+verified. Projection checks establish file contracts rather than provider
+execution. Hosted validation is recorded against the release commit; signed
+release provenance is not claimed. See the [release contract](docs/release-readiness.md)
+for the full scope and [README demo](README.md#try-the-synthetic-demo) for a local trial.
 
 ### Added
 
@@ -13,6 +30,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Historical privacy auditing includes unnamed blobs reachable only through Git tags.
+- Repository visibility allows the owner-approved public destination and no longer honors the implicit `SKILL_SYS_LOCAL_VALIDATE` fallback.
 - Provider projections omit deprecated, archived, and compatibility-only skill sources while preserving their canonical files. Clean rebuilds remove retired cached projections; non-clean builds reject stale retired public output and preserve modified user projections.
 - Public `skill-sys inspect-skill --online` is accepted by the dispatcher.
 - Local `skill-sys use --skill` rejects path traversal and symlink escapes.

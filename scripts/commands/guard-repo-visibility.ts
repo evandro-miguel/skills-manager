@@ -4,11 +4,12 @@ import { requireOptionValue } from "../lib/args.ts";
 import { runCommand, type RunCommandResult } from "../lib/command.ts";
 
 export const DEFAULT_REPOSITORY = "evandro-miguel/skills-manager";
+export const OWNER_APPROVED_PUBLIC_REPOSITORY = "evandro-miguel/skills-manager";
 export const ARCHITECTURE = "public-engine/base";
-export const POLICY_NOTICE = "must remain GitHub PRIVATE until the repository owner explicitly approves publication";
+export const POLICY_NOTICE = "requires verified GitHub PRIVATE visibility, except the owner-approved public Skills Manager repository";
 export const ALLOW_PUBLIC_AFTER_EXPLICIT_USER_APPROVAL_FLAG = "--allow-public-after-explicit-user-approval";
 
-export type RepoVisibilityGuardStatus = "PASS" | "PASS_LOCAL_UNVERIFIED" | "PASS_WITH_EXPLICIT_USER_APPROVAL" | "BLOCKING";
+export type RepoVisibilityGuardStatus = "PASS" | "PASS_OWNER_APPROVED_PUBLIC" | "PASS_LOCAL_UNVERIFIED" | "PASS_WITH_EXPLICIT_USER_APPROVAL" | "BLOCKING";
 
 export type RepoVisibilityGuardArgs = {
   json: boolean;
@@ -114,10 +115,12 @@ function parseGhRepoViewOutput(commandResult: RunCommandResult): ObservedVisibil
 
 function statusForObservation(observation: ObservedVisibility, args: RepoVisibilityGuardArgs): RepoVisibilityGuardStatus {
   if (observation.valid && observation.visibility === "PRIVATE" && observation.isPrivate === true) return "PASS";
+  const repository = args.repository || defaultRepository();
+  if (repository === OWNER_APPROVED_PUBLIC_REPOSITORY && observation.valid && observation.visibility === "PUBLIC" && observation.isPrivate === false) return "PASS_OWNER_APPROVED_PUBLIC";
   if (observation.valid && observation.visibility === "PUBLIC" && observation.isPrivate === false && args.allowPublicAfterExplicitUserApproval) {
     return "PASS_WITH_EXPLICIT_USER_APPROVAL";
   }
-  if (!observation.valid && (args.localOk || process.env.SKILL_SYS_LOCAL_VALIDATE === "1")) return "PASS_LOCAL_UNVERIFIED";
+  if (!observation.valid && args.localOk) return "PASS_LOCAL_UNVERIFIED";
   return "BLOCKING";
 }
 
@@ -135,7 +138,7 @@ export function runRepoVisibilityGuard(
     visibility: observation.visibility,
     isPrivate: observation.isPrivate,
     status: statusForObservation(observation, args),
-    localOk: args.localOk || process.env.SKILL_SYS_LOCAL_VALIDATE === "1",
+    localOk: args.localOk,
     allowPublicAfterExplicitUserApproval: args.allowPublicAfterExplicitUserApproval,
   };
 }

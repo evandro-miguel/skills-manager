@@ -1,11 +1,11 @@
 # Release Readiness Contract
 
-This document defines release checks for the Skills Manager alpha candidate.
+This document defines release checks for the Skills Manager source alpha.
 The engine and package retain the internal name `universall-skill-sys`.
 
-Current candidate status: **local alpha; hosted state unverified**. The planned
-GitHub destination is `evandro-miguel/skills-manager`. Its hosted existence,
-visibility, and CI state are not verified here. The package is `private: true`,
+Release scope: **GitHub source alpha** at `evandro-miguel/skills-manager`.
+Hosted readiness is established for each release by its exact-commit Actions
+results and public clone rehearsal. The package is `private: true`,
 version `0.4.0-alpha.0`, and license `MIT`, so npm publication remains disabled.
 
 No local checkout, tag, tarball, or validation run proves hosted release
@@ -160,7 +160,6 @@ entrypoint.
 Do not describe these as available or release-authorizing user features until
 their remaining implementation, authority, docs, and gates land:
 
-- GitHub public visibility for this repository.
 - npm publication or changing `private: true` to `false`.
 - License selection is resolved as MIT; npm publication and visibility changes
   remain gated.
@@ -212,6 +211,14 @@ Use a public noreply Git identity for the public candidate and review metadata
 before the first push. Preserve rejected source histories privately.
 
 ## Required Gates Before Publication
+
+The owner-approved guard policy permits verified PUBLIC visibility only for
+`evandro-miguel/skills-manager`. This policy approval does not prove that the
+repository exists, that hosted CI passed, or that npm publication is enabled.
+Unknown or contradictory visibility observations still block; other repositories
+retain the private default. Normal CI and package scripts use no publication
+override. The `SKILL_SYS_LOCAL_VALIDATE` environment fallback is removed;
+`--local-ok` remains diagnostic-only and cannot establish publication readiness.
 
 Pushing a `v*` tag runs validation only. The npm job is restricted to an
 explicit `workflow_dispatch` with `publish_npm=true` on a `v*` tag, and the

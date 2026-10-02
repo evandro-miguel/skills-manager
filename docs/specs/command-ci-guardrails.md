@@ -83,8 +83,10 @@ bun run validate:release
 ```
 
 `validate` is an alias for `validate:ci`. `validate:ci` runs the local gate plus
-`docs:check`, public audit, packlist, and npm pack audit. `validate:publish`
-adds the release visibility guard, fixture-backed projection build/validation,
+coverage, strict Markdown linting, `docs:check`, public audit, packlist, npm pack
+audit and dependency vulnerability checks. `validate:release` adds the complete
+reachable-history audit and repository visibility guard. `validate:publish`
+adds fixture-backed projection build/validation,
 release smoke, fixture-only origin verification, registry-surface validation, and a final npm
 pack audit. Provenance and attestation enforcement remain fail-closed/future
 publication gates, not active local verifier support. The `verify-origin` package
@@ -93,19 +95,17 @@ verify a hosted release tag or the engine repository origin.
 
 ## CI Workflows
 
-Current workflow:
+| Workflow | Trigger | Current behavior |
+| --- | --- | --- |
+| `universall-skill-sys-ci.yml` | Pull requests and pushes to `main` | Installs frozen dependencies with Bun 1.3.14 and runs `ci:checks`, including the history and visibility gates. |
+| `codeql.yml` | Pull requests, pushes to `main`, and schedule | JavaScript/TypeScript analysis and SARIF upload run only when the repository is public; private repositories skip those steps. |
+| `scorecard.yml` | Pushes to `main`, branch-protection events, and schedule | Scorecard analysis and SARIF upload run only when the repository is public; private repositories skip those steps. Results publication is disabled in the action. |
+| `release-publish.yml` | `v*` tags and manual dispatch | Validates release gates and synthetic artifacts. npm publishing requires manual `publish_npm=true` on a `v*` tag and fails while `private: true`. |
 
-- `universall-skill-sys-ci.yml`
-
-`universall-skill-sys-ci.yml` currently covers the staging validation gate:
-
-- TypeScript typecheck
-- schema contract check
-- public/base test suite
-- synthetic skillpack validation
-- sensitive and privacy scans
-- public artifact audit, packlist, and npm pack audit checks
-- repository visibility guard
+These definitions do not establish hosted execution for this candidate.
+Private-only skipped analysis is not evidence of a successful public CodeQL or
+Scorecard run. A tag push validates the release; it does not publish npm or
+create a GitHub Release automatically.
 
 Source-tree workflows such as `skills-change-guard.yml`, `skills-inventory.yml`,
 and `release-artifacts.yml` are not current base/public staging workflows. Do

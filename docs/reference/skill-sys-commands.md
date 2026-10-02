@@ -641,12 +641,17 @@ line count and a `references/` folder; lifecycle redirects are sourced from
 Backend: `generate-skills-inventory.ts`.
 
 `skill-sys guard-repo-visibility`
-: Fail closed unless the configured protected repository remains GitHub PRIVATE.
-GitHub Actions provides `GH_TOKEN` and runs `ci:checks`, which delegates to
-`validate:release` and this guard. The loud override
+: Fail closed unless GitHub confirms PRIVATE visibility, or PUBLIC visibility
+for the exact owner-approved `evandro-miguel/skills-manager` repository. Other
+repositories retain the private default; unknown or contradictory observations
+block. GitHub Actions runs the ordinary `ci:checks` without a publication
+override. The loud override
 `--allow-public-after-explicit-user-approval` exists only for an explicit
 maintainer-approved publication event and must never be wired into package
-scripts or CI. Backend: `guard-repo-visibility.ts`.
+scripts or CI. `--local-ok` is an explicit diagnostic mode for unverifiable
+visibility; `PASS_LOCAL_UNVERIFIED` is not publication evidence. The former
+`SKILL_SYS_LOCAL_VALIDATE` environment fallback is no longer honored.
+Backend: `guard-repo-visibility.ts`.
 
 `public-repository-audit.ts`
 : Audit the tracked Git surface before public repository publication using

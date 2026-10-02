@@ -61,6 +61,38 @@ function repoJson(visibility: string, isPrivate: boolean): string {
 }
 
 describe("repo visibility guard", () => {
+  test("ambient local validation cannot bypass unverifiable visibility", () => {
+    const previous = process.env.SKILL_SYS_LOCAL_VALIDATE;
+    try {
+      process.env.SKILL_SYS_LOCAL_VALIDATE = "1";
+      for (const observation of [
+        { code: 127, stdout: "" },
+        { code: 0, stdout: "invalid json" },
+        { code: 0, stdout: JSON.stringify({ visibility: "PRIVATE" }) },
+        { code: 0, stdout: repoJson("UNKNOWN", false) },
+      ]) {
+        const result = runGuardCli(["--json"], observation);
+        expect(result.code).toBe(1);
+        expect(JSON.parse(result.stdout).status).toBe("BLOCKING");
+        expect(JSON.parse(result.stdout).localOk).toBe(false);
+      }
+    } finally {
+      if (previous === undefined) delete process.env.SKILL_SYS_LOCAL_VALIDATE;
+      else process.env.SKILL_SYS_LOCAL_VALIDATE = previous;
+    }
+  });
+
+  test("public approval is restricted to the exact Skills Manager destination", () => {
+    for (const repository of ["example-org/skills-manager", "evandro-miguel/example-private"]) {
+      const result = runGuardCli(["--repository", repository, "--json"], { code: 0, stdout: repoJson("PUBLIC", false) });
+      expect(result.code).toBe(1);
+      expect(JSON.parse(result.stdout).status).toBe("BLOCKING");
+    }
+    const result = runGuardCli(["--repository", "evandro-miguel/skills-manager", "--allow-public-after-explicit-user-approval", "--json"], { code: 0, stdout: repoJson("PUBLIC", false) });
+    expect(result.code).toBe(0);
+    expect(JSON.parse(result.stdout).status).toBe("PASS_OWNER_APPROVED_PUBLIC");
+  });
+
   test("passes only for the protected private GitHub repository and prints required human fields", () => {
     const result = runGuardCli([], { code: 0, stdout: repoJson("PRIVATE", true) });
 
@@ -77,7 +109,7 @@ describe("repo visibility guard", () => {
     expect(result.stdout).toContain("Repository: evandro-miguel/skills-manager");
     expect(result.stdout).toContain("Architecture: public-engine/base");
     expect(result.stdout).toContain("GitHub visibility: PRIVATE");
-    expect(result.stdout).toContain("must remain GitHub PRIVATE until the repository owner explicitly approves publication");
+    expect(result.stdout).toContain("requires verified GitHub PRIVATE visibility, except the owner-approved public Skills Manager repository");
     expect(result.stderr).toBe("");
   });
 
@@ -111,25 +143,25 @@ describe("repo visibility guard", () => {
     }
   });
 
-  test("fails closed for PUBLIC/INTERNAL without override and passes PUBLIC with the explicit approval override", () => {
-    const publicWithoutOverride = runGuardCli([], { code: 0, stdout: repoJson("PUBLIC", false) });
-    expect(publicWithoutOverride.code).toBe(1);
-    expect(publicWithoutOverride.stdout).toContain("STATUS: BLOCKING");
+  test("allows the exact owner-approved public destination and preserves explicit override semantics", () => {
+    const publicWithoutOverride = runGuardCli(["--repository", "evandro-miguel/skills-manager"], { code: 0, stdout: repoJson("PUBLIC", false) });
+    expect(publicWithoutOverride.code).toBe(0);
+    expect(publicWithoutOverride.stdout).toContain("STATUS: PASS_OWNER_APPROVED_PUBLIC");
     expect(publicWithoutOverride.stdout).toContain("GitHub visibility: PUBLIC");
-    expect(publicWithoutOverride.stdout).toContain("must remain GitHub PRIVATE until the repository owner explicitly approves publication");
+    expect(publicWithoutOverride.stdout).toContain("requires verified GitHub PRIVATE visibility, except the owner-approved public Skills Manager repository");
 
     const internalWithoutOverride = runGuardCli([], { code: 0, stdout: repoJson("INTERNAL", false) });
     expect(internalWithoutOverride.code).toBe(1);
     expect(internalWithoutOverride.stdout).toContain("STATUS: BLOCKING");
     expect(internalWithoutOverride.stdout).toContain("GitHub visibility: INTERNAL");
 
-    const publicWithOverride = runGuardCli(["--allow-public-after-explicit-user-approval", "--json"], {
+    const publicWithOverride = runGuardCli(["--repository", "example-org/explicit-approved", "--allow-public-after-explicit-user-approval", "--json"], {
       code: 0,
       stdout: repoJson("PUBLIC", false),
     });
     expect(publicWithOverride.code).toBe(0);
     expect(JSON.parse(publicWithOverride.stdout)).toEqual({
-      repository: "evandro-miguel/skills-manager",
+      repository: "example-org/explicit-approved",
       visibility: "PUBLIC",
       isPrivate: false,
       status: "PASS_WITH_EXPLICIT_USER_APPROVAL",

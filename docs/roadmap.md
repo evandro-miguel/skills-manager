@@ -1,6 +1,14 @@
 # Skill-Sys Roadmap
 
-This roadmap tracks the next architecture wave for `universall-skill-sys`.
+This roadmap tracks the next architecture wave for Skills Manager, whose engine
+package retains the name `universall-skill-sys`.
+
+The immediate milestone is the `0.4.0-alpha.0` GitHub source release: documented
+local validation, projections, project installation, diagnostics and rollback.
+Publication depends on the [release gates](./release-readiness.md), exact-candidate
+review and the owner's publication decision. npm distribution, native-platform
+validation and provider-runtime evidence are separate milestones. The broader
+architecture backlog below is not a claim that all of it ships in this alpha.
 
 The north star is to stop treating the project as a folder copier and turn it
 into a release, verification, and provider projection system for operational
@@ -29,6 +37,14 @@ Governed planning sources:
   Vercel `skills`, Vercel `agent-skills`, `gstack`, `gbrain`, and the Agent
   Skills specification into an ordered PR stack.
 
+## Publication Policy
+
+The owner-approved policy permits verified PUBLIC visibility only for
+`evandro-miguel/skills-manager`; it does not establish hosted CI or provenance.
+Other repositories retain the private default. npm remains disabled while
+`package.json#private` is true. Product roadmap work remains separate from this
+repository visibility decision.
+
 ## Roadmap Shape
 
 This roadmap is intentionally implementation-facing. It keeps the sequence and
@@ -48,16 +64,9 @@ Priority rules:
 - P3 adds ecosystem scale: registry interop, registry trust score, and
   privacy-safe telemetry only if explicitly approved.
 
-Comparative north star:
-
-```text
-UX simple like Vercel skills.
-Catalog discipline like Vercel agent-skills.
-Workflow strength like gstack.
-Memory optionality inspired by gbrain.
-Security, auditability, provider projections, and release gates stronger than
-all of them.
-```
+The ecosystem references above inform usability, catalog structure, workflow
+composition and optional memory design. They are design inputs, not measured
+claims of comparative security, performance or feature completeness.
 
 ## Now: P0 Hardening
 

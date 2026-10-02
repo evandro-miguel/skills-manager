@@ -12,8 +12,10 @@ operator knowledge.
 
 The base/public-engine repository (`universall-skill-sys`) is the engine, not
 the personal catalog. "Public engine" describes the sanitized architecture, not
-current GitHub visibility; the GitHub repository remains PRIVATE until the repository owner
-explicitly approves publication.
+current GitHub visibility. The owner-approved visibility policy allows PUBLIC
+only for the exact `evandro-miguel/skills-manager` destination. Other repositories
+retain the private default; unknown observations block. Hosted state and npm
+publication still require separate verification and decisions.
 
 A healthy Skill-Sys release lets a user answer four questions before installing
 anything:

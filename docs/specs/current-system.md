@@ -40,15 +40,11 @@ The base/public-engine repo currently has no real first-party root catalog.
 The public fixture is synthetic and lives at
 [`examples/minimal-skillpack/skills/`](../../examples/minimal-skillpack/skills/).
 
-The historical private catalog snapshot from the original/private overlay reported:
-
-- legacy `totalSkills: 156`
-- legacy `generatedAt: 2026-05-18`
-- legacy `lifecycleRedirects: 25`
-
-Those values describe legacy migration evidence only. They are not a current
-inventory for `universall-skill-sys`, and `universall-skill-sys-pvt` is not the
-recommended private skill home for new workflows.
+The only shipped root skill is `skills/skill-sys/**`, which teaches agents how
+to operate the CLI. The public presentation name is Skills Manager; the package
+retains `universall-skill-sys` at `0.4.0-alpha.0`. Private catalog inventories are
+outside this public engine's scope. See the [alpha release notes](../../CHANGELOG.md)
+for the current candidate and its validation limits.
 
 ## User Skill Roots
 
@@ -198,21 +194,22 @@ Use these commands to verify the current built system:
 ```bash
 bun run validate:local
 bun run validate:ci
-bun run validate:release
-bun run ci:checks
-bun scripts/commands/skill-sys.ts doctor --state-safety --project .
-bun scripts/commands/skill-sys.ts doctor --budget --provider codex --global-core
-bun scripts/commands/skill-sys.ts scan-sensitive --source .
-bun scripts/commands/skill-sys.ts eval triggers --provider codex
-bun scripts/commands/skill-sys.ts eval collisions
-bun scripts/commands/skill-sys.ts semantic-audit --source .
-bun scripts/commands/source-checksum.ts --source .
-bun scripts/commands/release-verify.ts --source . --version v0.3.1
+bun run build-projections
+bun run validate-projections
+bun run release:smoke
 ```
 
-`doctor:all`, `source:checksum`, and `release:verify` are not current package
-scripts in this engine repo; use the direct command forms above unless package
-scripts are added later.
+`validate:ci` includes `validate:local`; choose the first for the complete local
+gate or the second for its narrower checks. Use the [README demo](../../README.md#try-the-synthetic-demo)
+for project installation and state-safety diagnostics against an actual install.
+
+`validate:release` and `ci:checks` additionally audit complete Git history and
+verify hosted repository visibility. `validate:publish` extends those gates with
+projection, release-smoke and registry checks. The `release:verify` package
+script verifies prepared release artifacts for an explicit source and version;
+`release:smoke` exercises preparation and verification on a temporary synthetic
+fixture. Neither establishes hosted provenance for this alpha. `doctor:all` and
+`source:checksum` are not current package scripts in this engine repo.
 
 Documentation-specific checks for this spec set:
 
