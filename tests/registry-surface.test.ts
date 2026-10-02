@@ -200,7 +200,7 @@ describe("registry/taps/advisories publish surface", () => {
     const commit = git.commit("channel ref variants");
     git.tag("v1.2.3");
     for (const ref of ["v1.2.3", commit, undefined]) {
-      writeRegistryFixture(root, [{ name: "next", releaseTag: "v1.2.3", commit, ref }]);
+      writeRegistryFixture(root, [{ name: "next", releaseTag: "v1.2.3", commit, ...(ref === undefined ? {} : { ref }) }]);
       if (ref === undefined) {
         const index = JSON.parse(fs.readFileSync(path.join(root, "registry/index.json"), "utf8"));
         delete index.channels.next.ref;
