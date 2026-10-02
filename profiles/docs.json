@@ -1,0 +1,12 @@
+{
+  "name": "docs",
+  "description": "Project-local stack pack for documentation authoring, editing, and repo docs operations.",
+  "curation": "stack-pack",
+  "scope": "project",
+  "skills": [
+    "doc-standards",
+    "doc-coauthoring",
+    "docs-operations",
+    "markdownlint-skill"
+  ]
+}

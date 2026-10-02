@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/sandbox-verdict.schema.json",
+  "title": "Universal Skills Sandbox Verification Verdict",
+  "description": "Plan-only sandbox verification verdict emitted by skill-sys verify-sandbox. Describes the sandbox command vector and the required runtime controls without executing anything.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "command",
+    "status",
+    "mode",
+    "source",
+    "applySupported",
+    "runtime",
+    "controls",
+    "mounts",
+    "violations"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "command": { "const": "verify-sandbox" },
+    "status": { "enum": ["PLAN", "BLOCKED"] },
+    "mode": { "enum": ["plan", "dry-run"] },
+    "source": { "type": "string", "minLength": 1 },
+    "applySupported": { "type": "boolean" },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "args"],
+      "properties": {
+        "command": { "enum": ["docker"] },
+        "args": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "networkNone",
+        "readonlyFilesystem",
+        "noNewPrivileges",
+        "capDropAll",
+        "mountsExplicit",
+        "denySensitivePaths"
+      ],
+      "properties": {
+        "networkNone": { "type": "boolean" },
+        "readonlyFilesystem": { "type": "boolean" },
+        "noNewPrivileges": { "type": "boolean" },
+        "capDropAll": { "type": "boolean" },
+        "mountsExplicit": { "type": "boolean" },
+        "denySensitivePaths": { "type": "boolean" }
+      }
+    },
+    "mounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "target", "readOnly"],
+        "properties": {
+          "kind": { "enum": ["bind", "tmpfs"] },
+          "source": { "type": "string", "minLength": 1 },
+          "target": { "type": "string", "minLength": 1 },
+          "readOnly": { "type": "boolean" }
+        }
+      }
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "code", "message"],
+        "properties": {
+          "severity": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

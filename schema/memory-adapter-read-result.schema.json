@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/memory-adapter-read-result.schema.json",
+  "title": "Skill-Sys Memory Adapter Read Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "operation", "status", "source", "config", "path", "name", "entryCount", "entries", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "memory-adapter" },
+    "operation": { "const": "read" },
+    "status": { "enum": ["read", "blocked"] },
+    "source": { "type": "string", "minLength": 1 },
+    "config": { "type": "string", "minLength": 1 },
+    "path": { "type": "string", "minLength": 1 },
+    "name": { "type": "string" },
+    "entryCount": { "type": "integer", "minimum": 0 },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "memory", "source", "createdAt"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "memory": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1 },
+          "createdAt": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

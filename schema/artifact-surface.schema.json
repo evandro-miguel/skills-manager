@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/artifact-surface.schema.json",
+  "title": "Universal Skills Artifact Surface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "requiredDirectories",
+    "requiredFiles",
+    "denyUntrackedCriticalSurfaces"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "requiredDirectories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    },
+    "requiredFiles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    },
+    "denyUntrackedCriticalSurfaces": {
+      "type": "boolean"
+    },
+    "forbiddenPaths": {
+      "type": "array",
+      "uniqueItems": true,
+      "deprecated": true,
+      "description": "Deprecated alias for forbiddenInArtifactPaths. Paths may exist in source, but must not enter the public artifact/packlist.",
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    },
+    "forbiddenInArtifactPaths": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Paths that may exist in source but must not enter this artifact surface.",
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    },
+    "forbiddenInSourcePaths": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Paths that must not exist under the source root when this surface is scanned.",
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    },
+    "allowedInForbiddenSourcePaths": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Explicit exceptions below forbidden source roots. Exact entries allow regular files; entries ending in /** allow a real directory subtree. All other descendants and symbolic links remain forbidden.",
+      "items": {
+        "$ref": "#/$defs/forbiddenSourceException"
+      }
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "^/"
+          },
+          {
+            "pattern": "(^|/)\\.\\.($|/)"
+          },
+          {
+            "pattern": "\\\\"
+          }
+        ]
+      }
+    },
+    "forbiddenSourceException": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/relativePath"
+        },
+        {
+          "pattern": "^(?:[^*]+|[^*]+/\\*\\*)$"
+        }
+      ]
+    }
+  }
+}

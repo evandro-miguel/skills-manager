@@ -1,0 +1,69 @@
+# Temp and scratch
+tmp/
+*.tmp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Caches
+.rumdl_cache/
+
+# Generated reports
+/coverage/
+/dist/
+/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local config, secrets, and agent runtime state
+.env
+.env.*
+!.env.example
+/privacy-policy.local.json
+/.afol/
+/.hermes-delegation/
+/.agents/
+/.hermes/
+/.codex
+/.codex-map/
+/.skills.state.json
+/AGENTS.md
+/CLAUDE.md
+/GEMINI.md
+/RTK.md
+/docs/lessons/
+/docs/plans/
+/docs/standards/
+/docs/telemetry/
+/docs/templates/
+/docs/map/writing-skills-scripts.md
+/docs/migration/public-staging-plan.md
+
+# Node
+node_modules/
+
+# Heapsnapshots
+*.heapsnapshot
+
+# Agent-browser auth/session state
+auth-state.json
+*-auth-state.json
+my-auth.json
+oauth-state.json
+2fa-state.json
+.agent-browser/
+
+# Archive (separate repo)
+.arq/
+.gitnexus
+.claude/
+.worktrees/

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/team-mode.schema.json",
+  "title": "Skill-Sys Team Mode Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "name", "lockfile", "installMode", "sharedConfig"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+    "description": { "type": "string", "minLength": 1 },
+    "lockfile": { "type": "string", "minLength": 1 },
+    "installMode": { "enum": ["projection", "copy"] },
+    "sharedConfig": { "type": "boolean" },
+    "adapters": {
+      "type": "array",
+      "items": { "enum": ["antigravity", "codex", "gemini-cli", "opencode", "qwen"] },
+      "uniqueItems": true
+    },
+    "allowedProfiles": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+      "uniqueItems": true
+    }
+  }
+}

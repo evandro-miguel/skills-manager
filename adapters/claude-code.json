@@ -1,0 +1,5 @@
+{
+  "name": "claude-code",
+  "targetPath": ".agents/skills",
+  "description": "Project-local shared skills"
+}

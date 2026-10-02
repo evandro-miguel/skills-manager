@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/projection-manifest.schema.json",
+  "title": "Skill Provider Projection Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "rendererVersion",
+    "providers",
+    "origins",
+    "projectionCount",
+    "generatedAt",
+    "projections",
+    "cache"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "rendererVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "origins": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "public",
+          "user"
+        ]
+      }
+    },
+    "projectionCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "generatedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "skill",
+          "origin",
+          "canonicalPath",
+          "projectionPath",
+          "canonicalDigest",
+          "projectionDigest",
+          "rendererVersion",
+          "manualOnly",
+          "risk"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "skill": {
+            "type": "string",
+            "minLength": 1
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "public",
+              "user"
+            ]
+          },
+          "canonicalPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "projectionPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonicalDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "projectionDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "rendererVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "manualOnly": {
+            "type": "boolean"
+          },
+          "risk": {
+            "$ref": "#/$defs/risk"
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cachedCount",
+        "rebuiltCount",
+        "storeHitCount"
+      ],
+      "properties": {
+        "cachedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rebuiltCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storeHitCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readsFiles",
+        "writesProject",
+        "writesGlobal",
+        "executesShell",
+        "networkAccess",
+        "externalDirectory",
+        "credentialSensitive",
+        "destructive",
+        "browserAuthState",
+        "repoMutation"
+      ],
+      "properties": {
+        "readsFiles": {
+          "type": "boolean"
+        },
+        "writesProject": {
+          "type": "boolean"
+        },
+        "writesGlobal": {
+          "type": "boolean"
+        },
+        "executesShell": {
+          "type": "boolean"
+        },
+        "networkAccess": {
+          "type": "boolean"
+        },
+        "externalDirectory": {
+          "type": "boolean"
+        },
+        "credentialSensitive": {
+          "type": "boolean"
+        },
+        "destructive": {
+          "type": "boolean"
+        },
+        "browserAuthState": {
+          "type": "boolean"
+        },
+        "repoMutation": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

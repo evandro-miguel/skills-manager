@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/source-manifest-v2.schema.json",
+  "title": "Source Manifest V2 Candidate",
+  "description": "Inactive declaration-only Source manifest schema candidate. Structural validity does not establish network safety, trust, authorization, or admission.",
+  "x-skill-sys-schema-version": "2",
+  "x-skill-sys-logical-id": "schema:skill-sys/source-manifest",
+  "x-skill-sys-revision": "2",
+  "type": "object",
+  "required": ["schemaVersion", "declarations"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 2
+    },
+    "declarations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/declaration"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "alias": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._~-]{0,63}$"
+    },
+    "sanitizedLocator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "^(?!\\s)(?!.*\\s$)(?!.*[\\u0000-\\u001f\\u007f-\\u009f])"
+    },
+    "sanitizedDiscoveryReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^(?!\\s)(?!.*\\s$)(?!.*[\\u0000-\\u001f\\u007f-\\u009f])"
+    },
+    "declaration": {
+      "type": "object",
+      "required": ["alias", "locator"],
+      "properties": {
+        "alias": {
+          "$ref": "#/$defs/alias"
+        },
+        "locator": {
+          "$ref": "#/$defs/sanitizedLocator"
+        },
+        "discovery_reference": {
+          "$ref": "#/$defs/sanitizedDiscoveryReference"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

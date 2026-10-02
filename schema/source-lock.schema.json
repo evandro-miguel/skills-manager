@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/source-lock.schema.json",
+  "title": "Source Lock",
+  "description": "Resolved state of third-party skill sources. File: skill-sys.sources.lock.json",
+  "type": "object",
+  "required": ["version", "generatedAt", "sources"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version. Must be 1."
+    },
+    "generatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 timestamp when this lock file was generated."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Resolved source entries with pinned commit SHAs.",
+      "items": {
+        "type": "object",
+        "required": ["name", "source", "ref", "resolvedCommit", "manifestPath", "resolvedAt"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique skill name."
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Git URL of the remote source repository."
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Git ref that was requested."
+          },
+          "resolvedCommit": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{40}$",
+            "description": "Full 40-character SHA-1 commit the ref resolved to."
+          },
+          "skillPath": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Directory path within the repository containing the skill."
+          },
+          "manifestPath": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Relative path to SKILL.md within the repository."
+          },
+          "resolvedAt": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ISO-8601 timestamp when this entry was resolved."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

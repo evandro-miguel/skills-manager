@@ -1,0 +1,49 @@
+{
+  "allowedFindings": [
+    {
+      "path": "scripts/modules/skillpool/privacy-scan.ts",
+      "code": "PRIVACY_CONTENT",
+      "rule": "LOCAL_PATH",
+      "line": 120,
+      "matchHash": "sha256:8a7a54d38f1a7e32e432cdd4defa812a03c7cd74bd291ed8a8eac8f24a9f0c68",
+      "reason": "Synthetic scanner detector fixture literal in public source.",
+      "expires": "2026-12-31"
+    },
+    {
+      "path": "scripts/modules/skillpool/privacy-scan.ts",
+      "code": "PRIVACY_CONTENT",
+      "rule": "PRIVATE_WORKFLOW",
+      "line": 126,
+      "matchHash": "sha256:17def17b1d07bcfa5e5f8c6aad3c380cf75ab3152d9e9db56a2a11f325e33368",
+      "reason": "Synthetic scanner term fixture literal in public source.",
+      "expires": "2026-12-31"
+    },
+    {
+      "path": "scripts/modules/skillpool/privacy-scan.ts",
+      "code": "PRIVACY_CONTENT",
+      "rule": "AGENT_STATE",
+      "line": 132,
+      "matchHash": "sha256:71359838c33bce05170689db4dee8edde789946945a2eea51c5bd6438c1d23e9",
+      "reason": "Synthetic scanner state-pattern fixture literal in public source.",
+      "expires": "2026-12-31"
+    },
+    {
+      "path": "scripts/modules/skillpool/privacy-scan.ts",
+      "code": "PRIVACY_CONTENT",
+      "rule": "COMPANY_DATA",
+      "line": 144,
+      "matchHash": "sha256:a60b85d409a01d46023f90741e01b79543a3cb1ba048eaefbe5d7a63638043bf",
+      "reason": "Synthetic scanner business-term fixture literal in public source.",
+      "expires": "2026-12-31"
+    },
+    {
+      "path": "scripts/modules/skillpool/sensitive-scan.ts",
+      "code": "PRIVACY_CONTENT",
+      "rule": "AGENT_STATE",
+      "line": 45,
+      "matchHash": "sha256:8aad8b074f44eef59f0e2b74a564b135764b40a61710fef43a7ed81f7bf853c0",
+      "reason": "Synthetic scanner state-pattern fixture literal in public source.",
+      "expires": "2026-12-31"
+    }
+  ]
+}

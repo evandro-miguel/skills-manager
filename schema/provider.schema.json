@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/provider.schema.json",
+  "title": "Skill-Sys Provider Capability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["provider", "skillPaths", "supports", "dangerNotes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "provider": { "type": "string", "enum": ["opencode", "codex", "claude-code", "antigravity", "qwen", "gemini-cli"] },
+    "displayName": { "type": "string", "minLength": 1 },
+    "detectionPaths": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project": { "type": "string" },
+        "user": { "type": "string" },
+        "global": { "type": "string" }
+      }
+    },
+    "skillPaths": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project": { "type": "string" },
+        "user": { "type": "string" },
+        "global": { "type": "string" }
+      }
+    },
+    "supports": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "boolean" },
+        "skillMd": { "type": "boolean" },
+        "implicitInvocationPolicy": { "type": "boolean" },
+        "allowedTools": { "type": "boolean" },
+        "permissions": { "type": "boolean" },
+        "agentMode": { "type": "boolean" },
+        "subagents": { "type": "boolean" },
+        "disableModelInvocation": { "type": "boolean" },
+        "userInvocable": { "type": "boolean" }
+      }
+    },
+    "dangerNotes": { "type": "array", "items": { "type": "string" } }
+  }
+}

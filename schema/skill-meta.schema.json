@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/skill-meta.schema.json",
+  "title": "Universal Skill Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "version", "contractVersion", "risk", "invocation"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "contractVersion": { "type": "string", "minLength": 1 },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["active", "deprecated", "experimental"]
+    },
+    "risk": {
+      "$ref": "#/$defs/risk"
+    },
+    "invocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implicitAllowed", "manualOnly", "requiresConfirmation"],
+      "properties": {
+        "implicitAllowed": { "type": "boolean" },
+        "manualOnly": { "type": "boolean" },
+        "requiresConfirmation": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readsFiles",
+        "writesProject",
+        "writesGlobal",
+        "executesShell",
+        "networkAccess",
+        "externalDirectory",
+        "credentialSensitive",
+        "destructive",
+        "browserAuthState",
+        "repoMutation"
+      ],
+      "properties": {
+        "readsFiles": { "type": "boolean" },
+        "writesProject": { "type": "boolean" },
+        "writesGlobal": { "type": "boolean" },
+        "executesShell": { "type": "boolean" },
+        "networkAccess": { "type": "boolean" },
+        "externalDirectory": { "type": "boolean" },
+        "credentialSensitive": { "type": "boolean" },
+        "destructive": { "type": "boolean" },
+        "browserAuthState": { "type": "boolean" },
+        "repoMutation": { "type": "boolean" }
+      }
+    }
+  }
+}

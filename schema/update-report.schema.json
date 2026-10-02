@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/update-report.schema.json",
+  "title": "Update Report",
+  "description": "Output of skill-sys update-check. Describes available updates without applying them.",
+  "type": "object",
+  "required": ["checkedAt", "entries"],
+  "properties": {
+    "checkedAt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 timestamp when the check was performed."
+    },
+    "entries": {
+      "type": "array",
+      "description": "Per-source check results. Empty means all sources are up to date.",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Skill name."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["up-to-date", "update-available", "error"],
+            "description": "Check result status."
+          },
+          "currentRef": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Currently locked ref or commit."
+          },
+          "currentCommit": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{40}$",
+            "description": "Currently locked 40-char commit SHA."
+          },
+          "latestRef": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Latest available ref (when update-available)."
+          },
+          "latestCommit": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{40}$",
+            "description": "Latest available 40-char commit SHA (when update-available)."
+          },
+          "error": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Error message when status is 'error'."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

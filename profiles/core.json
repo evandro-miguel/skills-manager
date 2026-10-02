@@ -1,0 +1,12 @@
+{
+  "name": "core",
+  "description": "Project-local foundation profile for the shared universal-skills baseline.",
+  "curation": "foundation",
+  "scope": "project",
+  "skills": [
+    "mcp-creator",
+    "writing-skills",
+    "bun-skill",
+    "typescript-skill"
+  ]
+}

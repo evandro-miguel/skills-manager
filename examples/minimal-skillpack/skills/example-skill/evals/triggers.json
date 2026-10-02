@@ -1,0 +1,14 @@
+{
+  "positive": [
+    {
+      "prompt": "Validate this example skillpack.",
+      "expectedSkill": "example-skill"
+    }
+  ],
+  "negative": [
+    {
+      "prompt": "Operate my private workflow.",
+      "mustNotTrigger": "example-skill"
+    }
+  ]
+}

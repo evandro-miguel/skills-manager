@@ -1,0 +1,23 @@
+{
+  "name": "example-skill",
+  "version": "0.1.0",
+  "contractVersion": "1.0",
+  "lifecycle": "active",
+  "risk": {
+    "readsFiles": false,
+    "writesProject": false,
+    "writesGlobal": false,
+    "executesShell": false,
+    "networkAccess": false,
+    "externalDirectory": false,
+    "credentialSensitive": false,
+    "destructive": false,
+    "browserAuthState": false,
+    "repoMutation": false
+  },
+  "invocation": {
+    "implicitAllowed": true,
+    "manualOnly": false,
+    "requiresConfirmation": false
+  }
+}

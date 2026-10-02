@@ -1,0 +1,29 @@
+{
+  "name": "universall-skill-sys",
+  "version": "0.4.0-alpha.0",
+  "role": "base-public-engine-staging",
+  "privateOverlay": "configured-out-of-band",
+  "artifactSurfaces": {
+    "enginePublic": "artifact-surfaces/engine-public.json",
+    "skillpackPublic": "artifact-surfaces/skillpack-public.json"
+  },
+  "profiles": [
+    "core",
+    "frontend",
+    "docs"
+  ],
+  "apps": [
+    "opencode",
+    "codex",
+    "claude-code",
+    "antigravity",
+    "qwen",
+    "gemini-cli"
+  ],
+  "schema": "schema/lockfile.schema.json",
+  "legacyCompatibility": {
+    "legacyCatalogName": "configured-out-of-band",
+    "legacyGlobalCore": "globals/core.json",
+    "legacySkillLifecycle": "skill-lifecycle.json"
+  }
+}

@@ -1,0 +1,743 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/catalog-search-result.schema.json",
+  "title": "Skill-Sys Catalog Search Result",
+  "description": "Inactive revision-1 candidate for the catalog.skills.search result contract.",
+  "x-skill-sys-schema-version": "1",
+  "x-skill-sys-logical-id": "schema:skill-sys/catalog-search-result",
+  "x-skill-sys-revision": "1",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/successEnvelope"
+    },
+    {
+      "$ref": "#/$defs/failureEnvelope"
+    }
+  ],
+  "$defs": {
+    "safeProfileName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^(?!\\.{1,2}$)(?!.*[\\\\/]).+$"
+    },
+    "profileMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/safeProfileName"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8192
+        },
+        "curation": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "scope": {
+          "type": "string",
+          "maxLength": 1024
+        }
+      }
+    },
+    "catalogSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "category",
+        "tags",
+        "triggers",
+        "version",
+        "updated_at",
+        "target_provider",
+        "path",
+        "profiles",
+        "profile_metadata",
+        "internal",
+        "experimental"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8192
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "updated_at": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "target_provider": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*[\\u0000-\\u001f\\u007f-\\u009f])(?!(?:.*/)?\\.{1,2}(?:/|$))(?!.*//)(?!.*\\/$).+$"
+        },
+        "profiles": {
+          "type": "array",
+          "maxItems": 1024,
+          "items": {
+            "$ref": "#/$defs/safeProfileName"
+          }
+        },
+        "profile_metadata": {
+          "type": "array",
+          "maxItems": 1024,
+          "items": {
+            "$ref": "#/$defs/profileMetadata"
+          }
+        },
+        "internal": {
+          "type": "boolean"
+        },
+        "experimental": {
+          "type": "boolean"
+        }
+      }
+    },
+    "successData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "returned",
+        "items"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "returned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/$defs/catalogSummary"
+          }
+        }
+      }
+    },
+    "invalidArgumentDetails": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "arguments"
+            },
+            "reason": {
+              "const": "unknown_option"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "enum": [
+                "contract",
+                "queries",
+                "categories",
+                "tags",
+                "profiles",
+                "limit"
+              ]
+            },
+            "reason": {
+              "const": "missing_value"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "enum": [
+                "limit",
+                "includeInternal",
+                "includeExperimental"
+              ]
+            },
+            "reason": {
+              "const": "invalid_type"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "limit"
+            },
+            "reason": {
+              "const": "out_of_range"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "enum": [
+                "queries",
+                "categories",
+                "tags",
+                "profiles",
+                "limit",
+                "includeInternal",
+                "includeExperimental"
+              ]
+            },
+            "reason": {
+              "const": "too_many_occurrences"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "enum": [
+                "queries",
+                "categories",
+                "tags",
+                "profiles"
+              ]
+            },
+            "reason": {
+              "const": "too_many_items"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "enum": [
+                "queries",
+                "categories",
+                "tags",
+                "profiles"
+              ]
+            },
+            "reason": {
+              "const": "item_too_large"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "arguments"
+            },
+            "reason": {
+              "const": "aggregate_too_large"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "profiles"
+            },
+            "reason": {
+              "const": "unsafe_name"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "contract"
+            },
+            "reason": {
+              "const": "unsupported_contract"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "contract"
+            },
+            "reason": {
+              "const": "duplicate_contract_selector"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "reason"
+          ],
+          "properties": {
+            "field": {
+              "const": "positionals"
+            },
+            "reason": {
+              "const": "positional_unsupported"
+            }
+          }
+        }
+      ]
+    },
+    "invalidArgumentError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "INVALID_ARGUMENT"
+        },
+        "message": {
+          "const": "Invalid catalog search argument."
+        },
+        "details": {
+          "$ref": "#/$defs/invalidArgumentDetails"
+        },
+        "retryable": {
+          "const": false
+        }
+      }
+    },
+    "permissionDeniedError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "PERMISSION_DENIED"
+        },
+        "message": {
+          "const": "Catalog search permission denied."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "permission"
+          ],
+          "properties": {
+            "permission": {
+              "enum": [
+                "catalog.skills.read",
+                "catalog.skills.hidden.read"
+              ]
+            }
+          }
+        },
+        "retryable": {
+          "const": false
+        }
+      }
+    },
+    "profileNotFoundError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "PROFILE_NOT_FOUND"
+        },
+        "message": {
+          "const": "Catalog search profile not found."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile"
+          ],
+          "properties": {
+            "profile": {
+              "$ref": "#/$defs/safeProfileName"
+            }
+          }
+        },
+        "retryable": {
+          "const": false
+        }
+      }
+    },
+    "catalogReadFailedError": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "details",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "const": "CATALOG_READ_FAILED"
+            },
+            "message": {
+              "const": "Catalog search data could not be read."
+            },
+            "details": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "enum": [
+                    "source_missing",
+                    "source_unreadable",
+                    "invalid_catalog",
+                    "catalog_limit_exceeded",
+                    "profile_limit_exceeded",
+                    "field_limit_exceeded"
+                  ]
+                }
+              }
+            },
+            "retryable": {
+              "const": false
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "details",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "const": "CATALOG_READ_FAILED"
+            },
+            "message": {
+              "const": "Catalog search data could not be read."
+            },
+            "details": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "const": "temporarily_unavailable"
+                }
+              }
+            },
+            "retryable": {
+              "const": true
+            }
+          }
+        }
+      ]
+    },
+    "resultTooLargeError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "RESULT_TOO_LARGE"
+        },
+        "message": {
+          "const": "Catalog search result is too large."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxBytes"
+          ],
+          "properties": {
+            "maxBytes": {
+              "const": 1048576
+            }
+          }
+        },
+        "retryable": {
+          "const": false
+        }
+      }
+    },
+    "deadlineExceededError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "DEADLINE_EXCEEDED"
+        },
+        "message": {
+          "const": "Catalog search deadline exceeded."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reason"
+          ],
+          "properties": {
+            "reason": {
+              "const": "deadline_exceeded"
+            }
+          }
+        },
+        "retryable": {
+          "const": true
+        }
+      }
+    },
+    "internalError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "const": "INTERNAL_ERROR"
+        },
+        "message": {
+          "const": "Catalog search failed."
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correlationId"
+          ],
+          "properties": {
+            "correlationId": {
+              "type": "string",
+              "pattern": "^err_[a-z2-7]{26}$"
+            }
+          }
+        },
+        "retryable": {
+          "const": false
+        }
+      }
+    },
+    "commandError": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/invalidArgumentError"
+        },
+        {
+          "$ref": "#/$defs/permissionDeniedError"
+        },
+        {
+          "$ref": "#/$defs/profileNotFoundError"
+        },
+        {
+          "$ref": "#/$defs/catalogReadFailedError"
+        },
+        {
+          "$ref": "#/$defs/resultTooLargeError"
+        },
+        {
+          "$ref": "#/$defs/deadlineExceededError"
+        },
+        {
+          "$ref": "#/$defs/internalError"
+        }
+      ]
+    },
+    "successEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operation",
+        "status",
+        "data",
+        "error"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "operation": {
+          "const": "catalog.skills.search"
+        },
+        "status": {
+          "const": "success"
+        },
+        "data": {
+          "$ref": "#/$defs/successData"
+        },
+        "error": {
+          "type": "null"
+        }
+      }
+    },
+    "failureEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operation",
+        "status",
+        "data",
+        "error"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "operation": {
+          "const": "catalog.skills.search"
+        },
+        "status": {
+          "const": "failure"
+        },
+        "data": {
+          "type": "null"
+        },
+        "error": {
+          "$ref": "#/$defs/commandError"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/memory-adapter-result.schema.json",
+  "title": "Skill-Sys Memory Adapter Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "source", "config", "strict", "adapterName", "adapter", "policy", "allowedSkillCount", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "memory-adapter" },
+    "status": { "enum": ["PASS", "CONCERNS", "BLOCKED"] },
+    "source": { "type": "string", "minLength": 1 },
+    "config": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "adapterName": { "type": "string" },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "mode", "path"],
+      "properties": {
+        "type": { "enum": ["jsonl", "sqlite", "mcp"] },
+        "mode": { "enum": ["read-only", "read-write"] },
+        "path": { "type": "string" }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visibility", "packageSurface", "readOptIn", "writeOptIn", "allowSensitiveMemory"],
+      "properties": {
+        "visibility": { "enum": ["private", "local"] },
+        "packageSurface": { "type": "boolean" },
+        "readOptIn": { "type": "boolean" },
+        "writeOptIn": { "type": "boolean" },
+        "allowSensitiveMemory": { "type": "boolean" }
+      }
+    },
+    "allowedSkillCount": { "type": "integer", "minimum": 0 },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

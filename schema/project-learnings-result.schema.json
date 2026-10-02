@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/project-learnings-result.schema.json",
+  "title": "Skill-Sys Project Learnings Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "source", "learnings", "strict", "learningsName", "entryCount", "policy", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "project-learnings" },
+    "status": { "enum": ["PASS", "CONCERNS", "BLOCKED"] },
+    "source": { "type": "string", "minLength": 1 },
+    "learnings": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "learningsName": { "type": "string" },
+    "entryCount": { "type": "integer", "minimum": 0 },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visibility", "packageSurface", "localOnly"],
+      "properties": {
+        "visibility": { "enum": ["private", "local"] },
+        "packageSurface": { "type": "boolean" },
+        "localOnly": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "entry": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

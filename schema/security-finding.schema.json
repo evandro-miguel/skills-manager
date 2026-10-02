@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/security-finding.schema.json",
+  "title": "Universal Skills Security Finding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["level", "code", "path", "rule", "message"],
+  "properties": {
+    "level": { "enum": ["ERROR", "WARN"] },
+    "code": {
+      "enum": [
+        "NETWORK_MARKER",
+        "CREDENTIAL_MARKER",
+        "HIDDEN_SETUP_SCRIPT",
+        "PROMPT_INJECTION",
+        "METADATA_INCONSISTENCY",
+        "SKILL_META_MISSING",
+        "FILE_SKIPPED_OVERSIZE",
+        "FILE_SKIPPED_BINARY"
+      ]
+    },
+    "path": { "type": "string", "minLength": 1 },
+    "rule": { "type": "string", "minLength": 1 },
+    "line": { "type": "integer", "minimum": 1 },
+    "message": { "type": "string", "minLength": 1 }
+  }
+}

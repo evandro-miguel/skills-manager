@@ -1,0 +1,40 @@
+{
+  "classificationCounts": [
+    {
+      "classification": "legacy-observed",
+      "count": 3
+    }
+  ],
+  "cohortId": "F-03.03-report-v1",
+  "cycles": [],
+  "evaluatedRevision": "846f5fe933ffd967b716bf798d0e6ab826ab98a2",
+  "exceptions": {
+    "declaredIds": [
+      "RETIRED-1"
+    ],
+    "retiredIds": [
+      "RETIRED-1"
+    ],
+    "unusedAcceptedIds": [],
+    "usedIds": []
+  },
+  "findings": [],
+  "graph": {
+    "digest": "be931ce060b9d370998418b4c0e05a295a1166786d178fa42673395293b8e2cf",
+    "externalDependencyCount": 1,
+    "fileCount": 3,
+    "internalEdgeCount": 0
+  },
+  "manifest": {
+    "digest": "d84133654d91f77273436892f814282d7724c9914b538c8a87a2081abe96c533",
+    "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+    "schemaVersion": 2
+  },
+  "outcome": {
+    "cycleCount": 0,
+    "findingCount": 0,
+    "ok": true
+  },
+  "reportDigest": "44d84459f59f9adc755147941bea6058dc1a776021b202a23afa0a937b20e7bb",
+  "schemaVersion": 1
+}

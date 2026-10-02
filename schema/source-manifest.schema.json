@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/source-manifest.schema.json",
+  "title": "Source Manifest",
+  "description": "Human-intent declaration of third-party skill sources. File: skill-sys.sources.json",
+  "type": "object",
+  "required": ["version", "sources"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version. Must be 1."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of skill sources to track and resolve.",
+      "items": {
+        "type": "object",
+        "required": ["name", "source", "ref"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique skill name within this manifest."
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Git URL of the remote source repository."
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Git ref to resolve: branch, tag, or commit SHA."
+          },
+          "skillPath": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Directory path within the repository containing the skill. Defaults to repository root if omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

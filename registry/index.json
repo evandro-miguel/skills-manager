@@ -1,0 +1,6 @@
+{
+  "$schema": "../schema/registry-index.schema.json",
+  "version": 1,
+  "channels": {},
+  "taps": []
+}

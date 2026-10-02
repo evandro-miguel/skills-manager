@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/dev-mode-result.schema.json",
+  "title": "Skill-Sys Dev Mode Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "source", "config", "strict", "devName", "plan", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "dev-mode" },
+    "status": { "enum": ["PASS", "CONCERNS", "BLOCKED"] },
+    "source": { "type": "string", "minLength": 1 },
+    "config": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "devName": { "type": "string" },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["installMode", "devOnly", "publicRelease", "links"],
+      "properties": {
+        "installMode": { "const": "symlink" },
+        "devOnly": { "type": "boolean" },
+        "publicRelease": { "type": "boolean" },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["skill", "source", "target", "action"],
+            "properties": {
+              "skill": { "type": "string", "minLength": 1 },
+              "source": { "type": "string", "minLength": 1 },
+              "target": { "type": "string", "minLength": 1 },
+              "action": { "const": "would-link" }
+            }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

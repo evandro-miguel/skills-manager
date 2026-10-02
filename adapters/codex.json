@@ -1,0 +1,5 @@
+{
+  "name": "codex",
+  "targetPath": ".agents/skills",
+  "description": "Project-local shared skills"
+}

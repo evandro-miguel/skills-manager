@@ -1,0 +1,7 @@
+{
+  "$schema": "../../schema/security-advisory-status.schema.json",
+  "version": 1,
+  "status": "no-known-advisories",
+  "generatedAt": "2026-06-06T00:00:00Z",
+  "advisories": []
+}

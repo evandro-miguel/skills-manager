@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/value-gate-results.schema.json",
+  "title": "Value Gate Immutable Baseline Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "baseline_id", "policy_version", "receipt"],
+  "properties": {
+    "schema_version": { "const": "value-gate-baseline/v1" },
+    "baseline_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+    "policy_version": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+    "receipt": { "type": "object", "description": "A measured-eval-receipt/v1 validated by the value-gate parser." }
+  }
+}

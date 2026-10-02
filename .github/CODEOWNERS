@@ -1,0 +1,19 @@
+# Universall Skill-Sys governance surfaces.
+
+* @evandro-miguel
+
+.github/workflows/** @evandro-miguel
+scripts/modules/skillpool/** @evandro-miguel
+scripts/modules/skill-sys/** @evandro-miguel
+scripts/commands/release-*.ts @evandro-miguel
+scripts/commands/verify-origin.ts @evandro-miguel
+scripts/commands/validate-registry-surface.ts @evandro-miguel
+artifact-surfaces/** @evandro-miguel
+schema/** @evandro-miguel
+providers/** @evandro-miguel
+registry/** @evandro-miguel
+package.json @evandro-miguel
+privacy-*.json @evandro-miguel
+SECURITY.md @evandro-miguel
+CONTRIBUTING.md @evandro-miguel
+overlays/** @evandro-miguel

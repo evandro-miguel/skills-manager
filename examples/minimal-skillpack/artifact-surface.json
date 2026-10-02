@@ -1,0 +1,16 @@
+{
+  "$schema": "../../schema/artifact-surface.schema.json",
+  "version": 1,
+  "requiredDirectories": [
+    "adapters",
+    "profiles",
+    "providers",
+    "skills"
+  ],
+  "requiredFiles": [
+    "artifact-surface.json",
+    "skill-lifecycle.json",
+    "skillpack.json"
+  ],
+  "denyUntrackedCriticalSurfaces": true
+}

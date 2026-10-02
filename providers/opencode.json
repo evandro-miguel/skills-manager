@@ -1,0 +1,25 @@
+{
+  "$schema": "../schema/provider.schema.json",
+  "provider": "opencode",
+  "displayName": "OpenCode",
+  "detectionPaths": {
+    "project": ".opencode",
+    "user": "~/.config/opencode"
+  },
+  "skillPaths": {
+    "project": ".agents/skills",
+    "user": "~/.config/opencode/skills"
+  },
+  "supports": {
+    "description": true,
+    "skillMd": true,
+    "permissions": true,
+    "agentMode": true,
+    "subagents": true,
+    "allowedTools": false
+  },
+  "dangerNotes": [
+    "OpenCode permissions should use ask or deny for shell/edit/network risk.",
+    "Some canonical skills may map better to agents than raw skill folders."
+  ]
+}

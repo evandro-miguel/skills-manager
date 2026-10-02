@@ -1,0 +1,23 @@
+{
+  "name": "skill-sys",
+  "version": "1.0.0",
+  "contractVersion": "1.0",
+  "lifecycle": "active",
+  "risk": {
+    "readsFiles": true,
+    "writesProject": true,
+    "writesGlobal": true,
+    "executesShell": true,
+    "networkAccess": false,
+    "externalDirectory": false,
+    "credentialSensitive": true,
+    "destructive": true,
+    "browserAuthState": false,
+    "repoMutation": false
+  },
+  "invocation": {
+    "implicitAllowed": true,
+    "manualOnly": false,
+    "requiresConfirmation": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://skill-sys.dev/schemas/skillpack.schema.json",
+  "name": "@skill-sys/minimal-skillpack",
+  "version": "0.1.0",
+  "visibility": "public",
+  "engine": {
+    "skillSys": ">=0.4.0"
+  },
+  "skills": [
+    "example-skill"
+  ],
+  "profiles": [
+    "default"
+  ],
+  "providers": [
+    "codex",
+    "opencode"
+  ],
+  "privacy": {
+    "containsPersonalData": false,
+    "containsLocalPaths": false,
+    "containsCompanyData": false
+  },
+  "security": {
+    "requiresRiskProfiles": true,
+    "requiresTriggerEvalsForRiskySkills": true
+  }
+}

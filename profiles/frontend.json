@@ -1,0 +1,13 @@
+{
+  "name": "frontend",
+  "description": "Project-local stack pack for frontend implementation, UI work, and browser testing.",
+  "curation": "stack-pack",
+  "scope": "project",
+  "skills": [
+    "react-skill",
+    "tailwind-skill",
+    "ui-design",
+    "playwright-skill",
+    "vite-skill"
+  ]
+}

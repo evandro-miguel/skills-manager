@@ -1,0 +1,7 @@
+{
+  "name": "default",
+  "description": "Example skillpack profile",
+  "skills": [
+    "example-skill"
+  ]
+}

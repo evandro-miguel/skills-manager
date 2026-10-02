@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema/provider.schema.json",
+  "provider": "gemini-cli",
+  "displayName": "Gemini CLI",
+  "detectionPaths": {
+    "project": ".gemini",
+    "user": "~/.gemini"
+  },
+  "skillPaths": {
+    "project": ".agents/skills",
+    "user": "~/.gemini/skills"
+  },
+  "supports": {
+    "description": true,
+    "skillMd": true,
+    "permissions": false,
+    "agentMode": false
+  },
+  "dangerNotes": [
+    "Current local project install remains shared .agents/skills.",
+    "Provider-specific permission semantics are not enforced by this baseline."
+  ]
+}

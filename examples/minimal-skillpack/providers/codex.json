@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../schema/provider.schema.json",
+  "provider": "codex",
+  "skillPaths": {
+    "project": ".agents/skills",
+    "user": "~/.codex/skills"
+  },
+  "supports": {
+    "description": true,
+    "skillMd": true,
+    "implicitInvocationPolicy": true,
+    "allowedTools": false,
+    "permissions": false,
+    "agentMode": false
+  },
+  "dangerNotes": [
+    "Implicit invocation depends on description quality.",
+    "Duplicate skill names can create selection ambiguity.",
+    "Dangerous projections should disable implicit invocation through provider policy."
+  ]
+}

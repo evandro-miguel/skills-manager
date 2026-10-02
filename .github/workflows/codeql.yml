@@ -1,0 +1,45 @@
+name: CodeQL
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '27 3 * * 1'
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze JavaScript/TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+
+      - name: Private repository compatibility guard
+        if: ${{ github.event.repository.private }}
+        run: |
+          echo "CodeQL upload is skipped for private repositories until code scanning is enabled in repository settings."
+          echo "The public-release path keeps the official CodeQL analysis enabled when the repository is no longer private."
+
+      - name: Initialize CodeQL
+        if: ${{ !github.event.repository.private }}
+        uses: github/codeql-action/init@b0c4fd77f6c559021d78430ec4d0d169ae74a4eb
+        with:
+          languages: javascript-typescript
+
+      - name: Autobuild
+        if: ${{ !github.event.repository.private }}
+        uses: github/codeql-action/autobuild@b0c4fd77f6c559021d78430ec4d0d169ae74a4eb
+
+      - name: Analyze
+        if: ${{ !github.event.repository.private }}
+        uses: github/codeql-action/analyze@b0c4fd77f6c559021d78430ec4d0d169ae74a4eb

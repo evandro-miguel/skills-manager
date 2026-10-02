@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/source-lock-v2.schema.json",
+  "title": "Source Lock V2 Candidate",
+  "description": "Inactive syntax-only Source resolution schema candidate. Structural validity does not establish verification, trust, admission, or usability.",
+  "x-skill-sys-schema-version": "2",
+  "x-skill-sys-logical-id": "schema:skill-sys/source-lock",
+  "x-skill-sys-revision": "2",
+  "type": "object",
+  "required": ["schemaVersion", "resolutions"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 2
+    },
+    "resolutions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resolution"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "alias": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._~-]{0,63}$"
+    },
+    "lowerHex64": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "gitCommitSha1Revision": {
+      "type": "object",
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "git-commit-sha1"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "localSnapshotSha256Revision": {
+      "type": "object",
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "local-snapshot-sha256"
+        },
+        "value": {
+          "$ref": "#/$defs/lowerHex64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "immutableRevision": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/gitCommitSha1Revision"
+        },
+        {
+          "$ref": "#/$defs/localSnapshotSha256Revision"
+        }
+      ]
+    },
+    "origin": {
+      "type": "object",
+      "required": ["key", "immutable_revision"],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/lowerHex64"
+        },
+        "immutable_revision": {
+          "$ref": "#/$defs/immutableRevision"
+        }
+      },
+      "additionalProperties": false
+    },
+    "skillDigest": {
+      "type": "object",
+      "required": ["algorithm", "profile", "scope", "value"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "sha-256"
+        },
+        "profile": {
+          "type": "string",
+          "const": "tree-v1"
+        },
+        "scope": {
+          "type": "string",
+          "const": "skill-content"
+        },
+        "value": {
+          "$ref": "#/$defs/lowerHex64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "skillDescriptor": {
+      "type": "object",
+      "required": ["kind", "logical_id", "revision", "digest"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "skill"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^skill:[a-z0-9][a-z0-9._~-]{0,63}/[a-z0-9][a-z0-9._~-]{0,63}$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]{0,127}$"
+        },
+        "digest": {
+          "$ref": "#/$defs/skillDigest"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resolution": {
+      "type": "object",
+      "required": ["alias", "origin", "descriptor"],
+      "properties": {
+        "alias": {
+          "$ref": "#/$defs/alias"
+        },
+        "origin": {
+          "$ref": "#/$defs/origin"
+        },
+        "descriptor": {
+          "$ref": "#/$defs/skillDescriptor"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

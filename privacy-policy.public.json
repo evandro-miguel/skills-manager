@@ -1,0 +1,27 @@
+{
+  "markers": {
+    "personNames": [
+      "Example Maintainer",
+      "Fixture Person",
+      "Sample User"
+    ],
+    "emailHandles": [
+      "maintainer@example.invalid",
+      "fixture.user@example.invalid"
+    ],
+    "privateWorkflowTerms": [
+      "example-private-workflow",
+      "fixture-internal-process",
+      "sample-local-routine"
+    ],
+    "localPaths": [
+      "EXAMPLE_LINUX_HOME",
+      "EXAMPLE_MACOS_HOME",
+      "EXAMPLE_WINDOWS_HOME"
+    ],
+    "companyTerms": [
+      "Example Client",
+      "Fixture Contract"
+    ]
+  }
+}

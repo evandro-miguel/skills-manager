@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/provider.schema.json",
+  "provider": "claude-code",
+  "displayName": "Claude Code",
+  "detectionPaths": {
+    "project": ".claude",
+    "user": "~/.claude"
+  },
+  "skillPaths": {
+    "project": ".agents/skills",
+    "user": "~/.claude/skills"
+  },
+  "supports": {
+    "description": true,
+    "skillMd": true,
+    "disableModelInvocation": true,
+    "userInvocable": true,
+    "allowedTools": true,
+    "permissions": false,
+    "agentMode": false
+  },
+  "dangerNotes": [
+    "allowed-tools grants permission and is not a deny baseline.",
+    "Side-effectful skills should use disable-model-invocation.",
+    "Project skills depend on workspace trust."
+  ]
+}

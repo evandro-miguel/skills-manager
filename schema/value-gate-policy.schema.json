@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/value-gate-policy.schema.json",
+  "title": "Value Gate Comparison Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "policy_id", "policy_version", "binding", "tolerances"],
+  "properties": {
+    "schema_version": { "const": "value-gate-policy/v1" }, "policy_id": { "type": "string" }, "policy_version": { "type": "string" },
+    "binding": { "type": "object", "additionalProperties": false, "required": ["sourceDigest", "fixtureDigest", "caseIds", "provider", "model"], "properties": { "sourceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "fixtureDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "caseIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }, "provider": { "type": "string" }, "model": { "type": "string" } } },
+    "tolerances": { "type": "object", "additionalProperties": false, "required": ["pass_rate", "duration", "token_overhead"], "properties": { "pass_rate": { "$ref": "#/$defs/ratio" }, "duration": { "$ref": "#/$defs/ms" }, "token_overhead": { "$ref": "#/$defs/tokens" } } }
+  },
+  "$defs": { "ratio": { "type": "object", "additionalProperties": false, "required": ["unit", "max_regression"], "properties": { "unit": { "const": "ratio" }, "max_regression": { "type": "number", "minimum": 0 } } }, "ms": { "type": "object", "additionalProperties": false, "required": ["unit", "max_regression"], "properties": { "unit": { "const": "ms" }, "max_regression": { "type": "number", "minimum": 0 } } }, "tokens": { "type": "object", "additionalProperties": false, "required": ["unit", "max_regression"], "properties": { "unit": { "const": "tokens" }, "max_regression": { "type": "number", "minimum": 0 } } } }
+}

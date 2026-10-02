@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/artifact-surface.schema.json",
+  "version": 1,
+  "requiredDirectories": [
+    "examples/minimal-skillpack"
+  ],
+  "requiredFiles": [
+    "artifact-surfaces/skillpack-public.json",
+    "schema/skillpack.schema.json"
+  ],
+  "forbiddenInArtifactPaths": [
+    ".agents",
+    ".arq",
+    ".codex-map",
+    "adapters",
+    "artifact-surface.json",
+    "bun.lock",
+    "globals/core.json",
+    "index.json",
+    "logs",
+    "overlays",
+    "package.json",
+    "profiles",
+    "providers",
+    "releases",
+    "scripts/bin",
+    "scripts/commands",
+    "scripts/lib",
+    "scripts/modules",
+    "scripts/ops",
+    "skill-lifecycle.json",
+    "skills",
+    "SKILLS.json",
+    "SKILLS.md",
+    "tmp"
+  ],
+  "denyUntrackedCriticalSurfaces": true
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/registry-import-result.schema.json",
+  "title": "Skill-Sys Registry Import Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "bundle", "output", "strict", "format", "registryName", "provenance", "files", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "registry-import" },
+    "status": { "enum": ["PASS", "BLOCKED"] },
+    "bundle": { "type": "string", "minLength": 1 },
+    "output": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "format": { "type": "string" },
+    "registryName": { "type": "string" },
+    "provenance": { "const": "UNVERIFIED" },
+    "files": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/relativePath" }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "const": "ERROR" },
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "anyOf": [
+          { "pattern": "^/" },
+          { "pattern": "(^|/)\\.\\.($|/)" },
+          { "pattern": "\\\\" }
+        ]
+      }
+    }
+  }
+}

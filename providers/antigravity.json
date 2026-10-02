@@ -1,0 +1,24 @@
+{
+  "$schema": "../schema/provider.schema.json",
+  "provider": "antigravity",
+  "displayName": "Antigravity",
+  "detectionPaths": {
+    "project": ".gemini",
+    "user": "~/.gemini"
+  },
+  "skillPaths": {
+    "project": ".agents/skills",
+    "user": "~/.gemini/skills"
+  },
+  "supports": {
+    "description": true,
+    "skillMd": true,
+    "permissions": false,
+    "agentMode": false
+  },
+  "dangerNotes": [
+    "Antigravity currently shares the Gemini CLI user skill path in this baseline.",
+    "Current local project install remains shared .agents/skills.",
+    "Provider-specific permission semantics are not enforced by this baseline."
+  ]
+}

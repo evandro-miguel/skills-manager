@@ -1,0 +1,5 @@
+{
+  "name": "antigravity",
+  "targetPath": ".agents/skills",
+  "description": "Project-local shared skills"
+}

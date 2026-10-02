@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/release-channel.schema.json",
+  "title": "Universal Skills Release Channel",
+  "type": "object",
+  "required": [
+    "$schema",
+    "version",
+    "channel",
+    "releaseTag",
+    "commit",
+    "sourceSha256",
+    "releaseManifestSha256",
+    "skillBomSha256",
+    "policy"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "channel": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "releaseTag": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{40}$"
+    },
+    "sourceSha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "releaseManifestSha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "skillBomSha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "requireSignedTag",
+        "requireReleaseManifest",
+        "requireSkillBom",
+        "requireSourceChecksum",
+        "allowFloatingRef"
+      ],
+      "properties": {
+        "requireSignedTag": {
+          "type": "boolean"
+        },
+        "requireReleaseManifest": {
+          "type": "boolean"
+        },
+        "requireSkillBom": {
+          "type": "boolean"
+        },
+        "requireSourceChecksum": {
+          "type": "boolean"
+        },
+        "allowFloatingRef": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "channel": {
+            "const": "stable"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "requireSignedTag": {
+                "const": true
+              },
+              "requireSourceChecksum": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

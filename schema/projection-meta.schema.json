@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/projection-meta.schema.json",
+  "title": "Skill Provider Projection Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "skill",
+    "origin",
+    "canonicalPath",
+    "projectionPath",
+    "canonicalDigest",
+    "projectionDigest",
+    "rendererVersion",
+    "manualOnly",
+    "risk"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "public",
+        "user"
+      ]
+    },
+    "canonicalPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectionPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonicalDigest": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "projectionDigest": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "rendererVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "manualOnly": {
+      "type": "boolean"
+    },
+    "risk": {
+      "$ref": "#/$defs/risk"
+    },
+    "cached": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readsFiles",
+        "writesProject",
+        "writesGlobal",
+        "executesShell",
+        "networkAccess",
+        "externalDirectory",
+        "credentialSensitive",
+        "destructive",
+        "browserAuthState",
+        "repoMutation"
+      ],
+      "properties": {
+        "readsFiles": {
+          "type": "boolean"
+        },
+        "writesProject": {
+          "type": "boolean"
+        },
+        "writesGlobal": {
+          "type": "boolean"
+        },
+        "executesShell": {
+          "type": "boolean"
+        },
+        "networkAccess": {
+          "type": "boolean"
+        },
+        "externalDirectory": {
+          "type": "boolean"
+        },
+        "credentialSensitive": {
+          "type": "boolean"
+        },
+        "destructive": {
+          "type": "boolean"
+        },
+        "browserAuthState": {
+          "type": "boolean"
+        },
+        "repoMutation": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

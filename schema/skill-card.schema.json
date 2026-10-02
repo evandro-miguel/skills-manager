@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/skill-card.schema.json",
+  "title": "Skill Card",
+  "description": "A single deterministic skill card derived from a skill's SKILL.md frontmatter and optional skill.meta.json risk metadata. Cards are emitted by scripts/commands/generate-skill-catalog.ts as part of a skill-cards.json catalog.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "description",
+    "useWhen",
+    "category",
+    "tags",
+    "triggers",
+    "targetProvider",
+    "providerSupport",
+    "risk",
+    "examples",
+    "sourcePath"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Skill name; matches the SKILL.md frontmatter name and the skills/<name>/ folder."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short human-readable description from the SKILL.md frontmatter."
+    },
+    "useWhen": {
+      "type": "string",
+      "description": "When to use the skill. Derives from metadata.useWhen, falling back to the description."
+    },
+    "category": {
+      "type": "string",
+      "description": "Skill category. May be empty when no category is declared."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Tags parsed from the metadata.tags CSV."
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Invocation triggers parsed from the metadata.triggers CSV."
+    },
+    "targetProvider": {
+      "type": "string",
+      "description": "Primary target provider from metadata.target_provider. May be empty."
+    },
+    "providerSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetProvider", "compatible"],
+      "properties": {
+        "targetProvider": { "type": "string" },
+        "compatible": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Compatible provider ids parsed from metadata.compatible_providers."
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "description": "Risk flags read from skill.meta.json when present. An empty object means risk data is absent and should be treated conservatively as unknown."
+    },
+    "examples": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Usage examples. Reserved for future structured sourcing; currently emitted as an empty array."
+    },
+    "sourcePath": {
+      "type": "string",
+      "pattern": "^skills/",
+      "description": "Relative path to the source SKILL.md, anchored under skills/."
+    }
+  }
+}

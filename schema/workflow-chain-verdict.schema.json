@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/workflow-chain-verdict.schema.json",
+  "title": "Skill-Sys Workflow Chain Verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "source", "workflow", "strict", "workflowName", "stepCount", "gateCount", "plan", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "workflow-chain" },
+    "status": { "enum": ["PASS", "CONCERNS", "BLOCKED"] },
+    "source": { "type": "string", "minLength": 1 },
+    "workflow": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "workflowName": { "type": "string" },
+    "stepCount": { "type": "integer", "minimum": 0 },
+    "gateCount": { "type": "integer", "minimum": 0 },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gates", "steps"],
+      "properties": {
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "command"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "command": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "skill", "requiredGates"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "skill": { "type": "string", "minLength": 1 },
+              "requiredGates": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "step": { "type": "string", "minLength": 1 },
+          "gate": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

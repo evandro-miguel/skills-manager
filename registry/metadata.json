@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/registry-metadata.schema.json",
+  "version": 1,
+  "name": "universall-skill-sys",
+  "baseUrl": "./registry/",
+  "index": {
+    "path": "registry/index.json",
+    "sha256": "1aec0dae2f04057528dd910afa86f097c4850655dd43a15c5398e5fb45898198"
+  },
+  "advisories": {
+    "path": "registry/advisories/security-status.json",
+    "sha256": "5126cbbf97247779e77072b617c75c9a968d6b8b32e2d89f6a822b6b3cbc9ea8"
+  }
+}

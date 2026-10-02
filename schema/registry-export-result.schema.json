@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/registry-export-result.schema.json",
+  "title": "Skill-Sys Registry Export Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "status", "source", "strict", "bundle", "findings"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "registry-export" },
+    "status": { "const": "PASS" },
+    "source": { "type": "string", "minLength": 1 },
+    "strict": { "type": "boolean" },
+    "bundle": { "type": "object" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

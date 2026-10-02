@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/value-gate-verdict.schema.json",
+  "title": "Value Gate Local Decision Verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command", "status", "receipt", "baseline", "policy", "compared_metrics", "findings", "release_authorized"],
+  "properties": {
+    "schema_version": { "const": "value-gate-verdict/v2" },
+    "command": { "const": "value-gate" },
+    "status": { "enum": ["PASS", "BLOCKED"] },
+    "receipt": { "type": "string", "minLength": 1 }, "baseline": { "type": "string", "minLength": 1 }, "policy": { "type": "string", "minLength": 1 },
+    "policy_version": { "type": "string", "minLength": 1 },
+    "compared_metrics": { "type": "array", "items": { "enum": ["pass_rate", "duration", "token_overhead"] } },
+    "findings": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["code", "message"], "properties": { "code": { "type": "string" }, "metric": { "type": "string" }, "message": { "type": "string" } } } },
+    "release_authorized": { "const": false }
+  }
+}

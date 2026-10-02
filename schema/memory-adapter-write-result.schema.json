@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/memory-adapter-write-result.schema.json",
+  "title": "Skill-Sys Memory Adapter Write Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "command", "operation", "status", "written", "source", "config", "path", "name", "id", "entryCount", "dryRun", "findings", "output"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "const": "memory-adapter" },
+    "operation": { "const": "write" },
+    "status": { "enum": ["written", "blocked", "dry-run"] },
+    "written": { "type": "boolean" },
+    "source": { "type": "string", "minLength": 1 },
+    "config": { "type": "string", "minLength": 1 },
+    "path": { "type": "string", "minLength": 1 },
+    "name": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "entryCount": { "type": "integer", "minimum": 0 },
+    "dryRun": { "type": "boolean" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["level", "code", "message"],
+        "properties": {
+          "level": { "enum": ["ERROR", "WARN"] },
+          "code": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "skill": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "output": { "type": "string" }
+  }
+}

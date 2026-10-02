@@ -1,0 +1,48 @@
+{
+  "classificationCounts": [
+    {
+      "classification": "application-catalog-read-port-target",
+      "count": 1
+    },
+    {
+      "classification": "catalog-public-target",
+      "count": 1
+    },
+    {
+      "classification": "legacy-observed",
+      "count": 1
+    }
+  ],
+  "cohortId": "F-03.03-report-v4",
+  "cycles": [],
+  "evaluatedRevision": "846f5fe933ffd967b716bf798d0e6ab826ab98a2",
+  "exceptions": {
+    "declaredIds": [
+      "RETIRED-1"
+    ],
+    "retiredIds": [
+      "RETIRED-1"
+    ],
+    "unusedAcceptedIds": [],
+    "usedIds": []
+  },
+  "findings": [],
+  "graph": {
+    "digest": "be931ce060b9d370998418b4c0e05a295a1166786d178fa42673395293b8e2cf",
+    "externalDependencyCount": 1,
+    "fileCount": 3,
+    "internalEdgeCount": 0
+  },
+  "manifest": {
+    "digest": "0b91a325c69c850762e8c89931dd90cbfd39df00e5435b7256cfd6d23d19cce1",
+    "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+    "schemaVersion": 5
+  },
+  "outcome": {
+    "cycleCount": 0,
+    "findingCount": 0,
+    "ok": true
+  },
+  "reportDigest": "31b9dab1be553aedf99471b8f788cafeb3a88f25fb4ba4ae49751fd409bc0f7f",
+  "schemaVersion": 4
+}

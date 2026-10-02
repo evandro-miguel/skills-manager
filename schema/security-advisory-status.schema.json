@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-sys.dev/schema/security-advisory-status.schema.json",
+  "title": "Universal Skills Security Advisory Status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "version",
+    "status",
+    "generatedAt",
+    "advisories"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "status": { "enum": ["no-known-advisories", "advisories-present", "unknown"] },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "advisories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/advisory" }
+    }
+  },
+  "$defs": {
+    "advisory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "severity", "summary", "affected", "patched"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["low", "moderate", "high", "critical"] },
+        "summary": { "type": "string", "minLength": 1 },
+        "affected": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "patched": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  }
+}

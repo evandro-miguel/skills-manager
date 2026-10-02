@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 4,
+  "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+  "rules": [
+    {
+      "id": "typed-content-contract-leaf",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/skill-sys/typed-content-identity.ts"
+      },
+      "classification": "contract-leaf",
+      "owner": "F-02.02",
+      "visibility": "public-in-engine",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "source-public-target",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/source/propose-source-registration.ts"
+      },
+      "classification": "source-public-target",
+      "owner": "Source / F-05.01",
+      "visibility": "public-in-engine",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "remove-planning-public-target",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/skill-sys/remove-planning.ts"
+      },
+      "classification": "planning-public-target",
+      "owner": "Planning",
+      "visibility": "public-in-engine",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "architecture-fitness-report",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/skill-sys/architecture-fitness-report.ts"
+      },
+      "classification": "legacy-observed",
+      "owner": "F-03.03",
+      "visibility": "internal",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "catalog-public-target",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/catalog/query-skills.ts"
+      },
+      "classification": "catalog-public-target",
+      "owner": "Catalog",
+      "visibility": "public-in-engine",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "application-catalog-read-port-target",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/application/ports/catalog-skills-reader.ts"
+      },
+      "classification": "application-catalog-read-port-target",
+      "owner": "Application",
+      "visibility": "internal",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "command-spec-registry",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/skill-sys/command-spec.ts"
+      },
+      "classification": "legacy-observed",
+      "owner": "F-04.01",
+      "visibility": "internal",
+      "effect": "pure",
+      "lifecycle": "active"
+    },
+    {
+      "id": "remove-compatibility-facade",
+      "selector": {
+        "kind": "exact",
+        "path": "scripts/modules/skillpool/remove.ts"
+      },
+      "classification": "remove-compatibility-facade",
+      "owner": "F-15",
+      "visibility": "compatibility",
+      "effect": "mixed",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "legacy-skillpool-compatibility",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/modules/skillpool/"
+      },
+      "exclusions": [
+        {
+          "kind": "exact",
+          "path": "scripts/modules/skillpool/remove.ts"
+        }
+      ],
+      "classification": "legacy-compatibility",
+      "owner": "F-15",
+      "visibility": "compatibility",
+      "effect": "mixed",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "legacy-skill-sys-observed",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/modules/skill-sys/"
+      },
+      "exclusions": [
+        {
+          "kind": "exact",
+          "path": "scripts/modules/skill-sys/typed-content-identity.ts"
+        },
+        {
+          "kind": "exact",
+          "path": "scripts/modules/skill-sys/remove-planning.ts"
+        },
+        {
+          "kind": "exact",
+          "path": "scripts/modules/skill-sys/architecture-fitness-report.ts"
+        },
+        {
+          "kind": "exact",
+          "path": "scripts/modules/skill-sys/command-spec.ts"
+        }
+      ],
+      "classification": "legacy-observed",
+      "owner": "F-03",
+      "visibility": "internal",
+      "effect": "mixed",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "legacy-modules-observed",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/modules/"
+      },
+      "exclusions": [
+        {
+          "kind": "exact",
+          "path": "scripts/modules/catalog/query-skills.ts"
+        },
+        {
+          "kind": "exact",
+          "path": "scripts/modules/application/ports/catalog-skills-reader.ts"
+        },
+        {
+          "kind": "exact",
+          "path": "scripts/modules/source/propose-source-registration.ts"
+        },
+        {
+          "kind": "prefix",
+          "path": "scripts/modules/skillpool/"
+        },
+        {
+          "kind": "prefix",
+          "path": "scripts/modules/skill-sys/"
+        }
+      ],
+      "classification": "legacy-observed",
+      "owner": "F-03",
+      "visibility": "internal",
+      "effect": "mixed",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "legacy-support-lib",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/lib/"
+      },
+      "classification": "legacy-support",
+      "owner": "F-03",
+      "visibility": "internal",
+      "effect": "mixed",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "interface-commands",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/commands/"
+      },
+      "classification": "interface-observed",
+      "owner": "F-04",
+      "visibility": "interface",
+      "effect": "imperative",
+      "lifecycle": "observed"
+    },
+    {
+      "id": "interface-launchers",
+      "selector": {
+        "kind": "prefix",
+        "path": "scripts/bin/"
+      },
+      "classification": "interface-observed",
+      "owner": "F-04",
+      "visibility": "interface",
+      "effect": "imperative",
+      "lifecycle": "observed"
+    }
+  ],
+  "forbiddenDependencies": [
+    {
+      "id": "contract-leaf-has-no-production-dependencies",
+      "from": "contract-leaf",
+      "to": "*"
+    },
+    {
+      "id": "legacy-observed-to-interface",
+      "from": "legacy-observed",
+      "to": "interface-observed"
+    },
+    {
+      "id": "legacy-compatibility-to-interface",
+      "from": "legacy-compatibility",
+      "to": "interface-observed"
+    },
+    {
+      "id": "legacy-support-to-interface",
+      "from": "legacy-support",
+      "to": "interface-observed"
+    },
+    {
+      "id": "planning-public-target-import-free",
+      "from": "planning-public-target",
+      "to": "*"
+    },
+    {
+      "id": "interface-to-planning-public-target",
+      "from": "interface-observed",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "legacy-observed-to-planning-public-target",
+      "from": "legacy-observed",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "legacy-compatibility-to-planning-public-target",
+      "from": "legacy-compatibility",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "legacy-support-to-planning-public-target",
+      "from": "legacy-support",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "application-to-planning-public-target",
+      "from": "application-target",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "adapter-to-planning-public-target",
+      "from": "adapter-target",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "source-public-to-planning-public-target",
+      "from": "source-public-target",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "source-internal-to-planning-public-target",
+      "from": "source-internal-target",
+      "to": "planning-public-target"
+    },
+    {
+      "id": "contract-to-planning-public-target",
+      "from": "contract-leaf",
+      "to": "planning-public-target"
+    }
+  ],
+  "openingEdges": [
+    {
+      "from": "scripts/modules/skillpool/registry-export.ts",
+      "to": "scripts/commands/validate-registry-surface.ts"
+    },
+    {
+      "from": "scripts/modules/skillpool/registry-trust.ts",
+      "to": "scripts/commands/validate-registry-surface.ts"
+    },
+    {
+      "from": "scripts/modules/skillpool/skillpack.ts",
+      "to": "scripts/commands/universal-contract.ts"
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "F03-OPENING-001",
+      "from": "scripts/modules/skillpool/registry-export.ts",
+      "to": "scripts/commands/validate-registry-surface.ts",
+      "forbiddenDependencyId": "legacy-compatibility-to-interface",
+      "rationale": "Preserve characterized registry export behavior while the command-owned validator is moved behind a component public API.",
+      "compatibilityConsumer": "F-15 registry export characterization and current registry export command",
+      "owningRoadmapFeature": "F-03",
+      "creationRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "reviewStatus": "accepted",
+      "validThroughManifestVersion": 4,
+      "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "owner": "F-03 seam owner; retirement evidence owner F-15",
+      "retirementCondition": "F-15 characterization proves registry export parity after command dependency removal.",
+      "retirementTargetChild": "F-15.02",
+      "evidenceReference": "F-03.01 opening graph at 6d0a2728ea39da64b09177edc71ae364fdcb1325"
+    },
+    {
+      "id": "F03-OPENING-002",
+      "from": "scripts/modules/skillpool/registry-trust.ts",
+      "to": "scripts/commands/validate-registry-surface.ts",
+      "forbiddenDependencyId": "legacy-compatibility-to-interface",
+      "rationale": "Preserve characterized registry trust behavior while the command-owned validator is moved behind a component public API.",
+      "compatibilityConsumer": "F-15 registry trust characterization and current registry trust command",
+      "owningRoadmapFeature": "F-03",
+      "creationRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "reviewStatus": "accepted",
+      "validThroughManifestVersion": 4,
+      "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "owner": "F-03 seam owner; retirement evidence owner F-15",
+      "retirementCondition": "F-15 characterization proves registry trust parity after command dependency removal.",
+      "retirementTargetChild": "F-15.02",
+      "evidenceReference": "F-03.01 opening graph at 6d0a2728ea39da64b09177edc71ae364fdcb1325"
+    },
+    {
+      "id": "F03-OPENING-003",
+      "from": "scripts/modules/skillpool/skillpack.ts",
+      "to": "scripts/commands/universal-contract.ts",
+      "forbiddenDependencyId": "legacy-compatibility-to-interface",
+      "rationale": "Preserve characterized skillpack validation while the command-owned universal contract is moved behind a component public API.",
+      "compatibilityConsumer": "F-15 skillpack characterization and current skillpack validation paths",
+      "owningRoadmapFeature": "F-03",
+      "creationRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "reviewStatus": "accepted",
+      "validThroughManifestVersion": 4,
+      "openingRevision": "6d0a2728ea39da64b09177edc71ae364fdcb1325",
+      "owner": "F-03 seam owner; retirement evidence owner F-15",
+      "retirementCondition": "F-15 characterization proves skillpack validation parity after command dependency removal.",
+      "retirementTargetChild": "F-15.02",
+      "evidenceReference": "F-03.01 opening graph at 6d0a2728ea39da64b09177edc71ae364fdcb1325"
+    }
+  ]
+}

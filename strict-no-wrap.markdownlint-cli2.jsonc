@@ -1,0 +1,26 @@
+{
+  "config": {
+    "default": true,
+    "MD003": { "style": "atx" },
+    "MD004": { "style": "dash" },
+    "MD007": { "indent": 2 },
+    "MD024": { "siblings_only": true },
+    "MD031": { "list_items": false },
+    "MD046": { "style": "fenced" },
+    "MD048": { "style": "backtick" },
+    "MD013": false,
+    "MD026": false,
+    "MD033": false,
+    "MD034": false,
+    "MD041": false
+  },
+  "gitignore": ".gitignore",
+  "ignores": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**"
+  ],
+  "noBanner": true,
+  "noProgress": true
+}
