@@ -245,6 +245,28 @@ function parseReachableCommitIds(stdout: string): string[] {
   return [...new Set(objectIds)];
 }
 
+function listUnnamedReachableBlobs(source: string, stdout: string): HistoricalObject[] {
+  const objectIds = parseReachableCommitIds(
+    stdout.split("\n")
+      .filter((line) => /^(?:[0-9a-f]{40}|[0-9a-f]{64}) ?$/i.test(line))
+      .map((line) => line.trim()).join("\n"),
+  );
+  if (!objectIds.length) return [];
+  const metadata = parseBatchCheck(runGitCapture(
+    source, ["cat-file", "--batch-check"], `${objectIds.join("\n")}\n`, 2 * 1024 * 1024,
+  ));
+  const blobs: HistoricalObject[] = [];
+  for (const objectId of objectIds) {
+    const detail = metadata.get(objectId);
+    if (!detail || detail.type === "missing") throw new Error(HISTORICAL_BLOB_SCAN_REMEDIATION);
+    if (detail.type === "blob") {
+      // Direct blob refs have no filename in rev-list; scan them under a synthetic text path.
+      blobs.push({ objectId, path: `objects/unnamed-${objectId}.txt` });
+    }
+  }
+  return blobs;
+}
+
 function parseReachableAnnotatedTagIds(stdout: string): string[] {
   const objectIds: string[] = [];
   for (const line of stdout.split("\n")) {
@@ -766,6 +788,7 @@ export function runPublicRepositoryAudit(source: string): PublicRepositoryAuditR
     : Buffer.alloc(0);
   const historicalObjects = deduplicateHistoricalContexts([
     ...revListObjects,
+    ...listUnnamedReachableBlobs(source, historyResult.stdout),
     ...parseRawHistoryObjects(rawHistory, policyObjectIds),
   ]);
   return auditTrackedFiles(

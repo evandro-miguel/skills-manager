@@ -136,7 +136,62 @@ function auditNestedTagMetadataFixture(prefix: string, taggerEmail: string) {
   }
 }
 
+function auditTagTargetFixture(kind: "lightweight" | "annotated" | "nested" | "tree", content: string) {
+  const source = makeFixtureRoot("public-repository-audit-tag-target-");
+  try {
+    fs.mkdirSync(path.join(source, "skills", "skill-sys"), { recursive: true });
+    fs.writeFileSync(path.join(source, "skills", "skill-sys", "SKILL.md"), "# Fixture skill\n");
+    runGit(source, ["init"]);
+    runGit(source, ["config", "user.email", "fixture@example.invalid"]);
+    runGit(source, ["config", "user.name", "Fixture User"]);
+    runGit(source, ["add", "."]);
+    runGit(source, ["commit", "-m", "clean fixture"]);
+    let target = runGitOutput(source, ["hash-object", "-w", "--stdin"], content).trim();
+    let type = "blob";
+    if (kind === "tree") {
+      target = runGitOutput(source, ["mktree"], `100644 blob ${target}\tnote.md\n`).trim();
+      type = "tree";
+    }
+    const tagCount = kind === "lightweight" ? 0 : kind === "nested" ? 2 : 1;
+    for (let index = 0; index < tagCount; index += 1) {
+      target = runGitOutput(source, ["mktag"], [
+        `object ${target}`, `type ${type}`, `tag fixture-${index}`,
+        "tagger Fixture User <fixture@example.invalid> 0 +0000", "", "clean tag", "",
+      ].join("\n")).trim();
+      type = "tag";
+    }
+    runGit(source, ["update-ref", "refs/tags/fixture", target]);
+    return audit.runPublicRepositoryAudit(source);
+  } finally {
+    fs.rmSync(source, { recursive: true, force: true });
+  }
+}
+
 describe("public repository boundary", () => {
+  for (const kind of ["lightweight", "annotated", "nested", "tree"] as const) {
+    test(`blocks private content reachable only through a ${kind} tag target`, () => {
+      const marker = ["", "home", "fixture-user", "private-workflow"].join("/");
+      const result = auditTagTargetFixture(kind, `synthetic marker=${marker}\n`);
+      expect(result.status).toBe("BLOCKING");
+      expect(result.historicalContentClasses).toContainEqual(expect.objectContaining({
+        code: "PRIVACY_CONTENT", rule: "LOCAL_PATH", count: 1,
+      }));
+      expect(audit.renderPublicRepositoryAudit(result).join("\n")).not.toContain(marker);
+    });
+
+    test(`accepts clean content reachable only through a ${kind} tag target`, () => {
+      expect(auditTagTargetFixture(kind, "clean fixture content\n").status).toBe("PASS");
+    });
+  }
+
+  test("blocks an oversized unnamed blob reachable only through a tag", () => {
+    const result = auditTagTargetFixture("annotated", "A".repeat(audit.HISTORICAL_BLOB_MAX_BYTES + 1));
+    expect(result.status).toBe("BLOCKING");
+    expect(result.historicalContentClasses).toContainEqual(expect.objectContaining({
+      code: "FILE_SKIPPED_OVERSIZE", rule: "MAX_FILE_BYTES", count: 1,
+    }));
+  });
+
   test("allows only the selected public agent skill under .agents", () => {
     const result = audit.auditTrackedFiles([
       "skills/skill-sys/SKILL.md",
