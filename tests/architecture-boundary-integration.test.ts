@@ -380,6 +380,23 @@ describe("architecture graph AST scanner", () => {
     expect(graph.externalDependencies).toEqual([]);
   });
 
+  test("substitutes every package target wildcard without replacement-string expansion", () => {
+    const fixtureRoot = createFixture({
+      "package.json": JSON.stringify({
+        imports: { "#repeat/*": "./scripts/modules/repeated/*/*.ts" },
+      }),
+      "scripts/commands/main.ts": 'import "#repeat/value";\nimport "#repeat/dollar$&";\n',
+      "scripts/modules/repeated/value/value.ts": "export const value = true;\n",
+      "scripts/modules/repeated/dollar$&/dollar$&.ts": "export const literal = true;\n",
+    });
+
+    const graph = scanArchitectureGraph({ repoRoot: fixtureRoot });
+    expect(graph.edges.map((edge) => edge.to)).toEqual([
+      "scripts/modules/repeated/dollar$&/dollar$&.ts",
+      "scripts/modules/repeated/value/value.ts",
+    ]);
+  });
+
   test("fails closed for unresolved and unsafe package imports", () => {
     const fixtureRoot = createFixture({
       "package.json": JSON.stringify({

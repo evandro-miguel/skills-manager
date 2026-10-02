@@ -557,7 +557,7 @@ function resolvePackageImportTarget(
       specifier.length >= prefix.length + suffix.length
     ) {
       const matched = specifier.slice(prefix.length, specifier.length - suffix.length);
-      return rule.target.replace("*", matched);
+      return rule.target.replaceAll("*", () => matched);
     }
   }
   return undefined;
