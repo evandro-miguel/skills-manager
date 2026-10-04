@@ -60,6 +60,20 @@ describe("workflow policy", () => {
       const text = fs.readFileSync(filePath, "utf8");
       expect(text).toMatch(/\npermissions:\n/);
       expect(text).toMatch(/\n  contents: read\n/);
+      const workflow = Bun.YAML.parse(text) as {
+        permissions: Record<string, string>;
+        jobs: Record<string, { permissions?: Record<string, string> }>;
+      };
+      expect(Object.values(workflow.permissions)).not.toContain("write");
+      if (["codeql.yml", "scorecard.yml"].includes(path.basename(filePath))) {
+        for (const job of Object.values(workflow.jobs)) {
+          expect(job.permissions?.contents).toBe("read");
+          expect(job.permissions?.["security-events"]).toBe("write");
+          for (const [scope, access] of Object.entries(job.permissions ?? {})) {
+            if (access === "write") expect(scope).toBe("security-events");
+          }
+        }
+      }
     }
   });
 

@@ -23,4 +23,4 @@
 
 ## Notes for Maintainers
 
-- Branch protection for `universall-skill-sys` should require passing `universall-skill-sys-ci` before merge into `main`.
+- Branch protection for `skills-manager` should require the `quality-gates` check from `universall-skill-sys-ci` before merge into `main`.

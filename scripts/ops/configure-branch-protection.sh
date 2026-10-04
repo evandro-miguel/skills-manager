@@ -10,6 +10,10 @@ if [ "${1:-}" = "--help" ]; then
   cat <<EOF
 Configure GitHub branch protection for universall-skill-sys
 
+Requires passing CI, including for administrators. No human approval is required.
+Configure and verify the ci-* candidate-tag workflow before applying this policy
+to a main-only repository. See CONTRIBUTING.md for the maintainer delivery flow.
+
 Requirements:
   - GH_TOKEN or GITHUB_TOKEN with repo admin permissions
   - remote.origin.url set to GitHub repository
@@ -58,11 +62,7 @@ PAYLOAD=$(cat <<EOF
     "contexts": ["$REQUIRED_CHECK"]
   },
   "enforce_admins": true,
-  "required_pull_request_reviews": {
-    "dismiss_stale_reviews": true,
-    "require_code_owner_reviews": false,
-    "required_approving_review_count": 1
-  },
+  "required_pull_request_reviews": null,
   "restrictions": null,
   "allow_force_pushes": false,
   "allow_deletions": false

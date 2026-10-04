@@ -219,7 +219,7 @@ function main(argv: string[] = process.argv, runFn: Runner = run): void {
     runFn("bun", ["scripts/commands/markdown-strict-batch-fix.ts", ...markdownFiles], {
       stdio: "inherit",
     });
-    runFn("bun", ["x", "markdownlint-cli2", "--fix", ...markdownFiles], {
+    runFn("bun", ["x", "--no-install", "markdownlint", "--config", "strict-no-wrap.markdownlint-cli2.jsonc", "--configPointer", "/config", "--fix", ...markdownFiles], {
       stdio: "inherit",
     });
     if (options.restage) {
@@ -228,7 +228,7 @@ function main(argv: string[] = process.argv, runFn: Runner = run): void {
   }
 
   if (markdownFiles.length > 0) {
-    runFn("bun", ["x", "markdownlint-cli2", ...markdownFiles], { stdio: "inherit" });
+    runFn("bun", ["x", "--no-install", "markdownlint", "--config", "strict-no-wrap.markdownlint-cli2.jsonc", "--configPointer", "/config", ...markdownFiles], { stdio: "inherit" });
   }
 
   for (const skillDir of skillDirs) {

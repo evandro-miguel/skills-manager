@@ -10,11 +10,12 @@ on:
 
 permissions:
   contents: read
-  security-events: write
-  id-token: write
 
 jobs:
   scorecard:
+    permissions:
+      contents: read
+      security-events: write
     name: Scorecard analysis
     runs-on: ubuntu-latest
     timeout-minutes: 30

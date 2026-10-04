@@ -1,4 +1,6 @@
 {
+  // markdownlint-cli reads only /config. Active file exclusions are defined in
+  // package.json#md:lint; the remaining CLI2 keys below are legacy compatibility.
   "config": {
     "default": true,
     "MD003": { "style": "atx" },

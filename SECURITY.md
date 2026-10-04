@@ -1,35 +1,43 @@
 # Security Policy
 
-## Supported status
+## Supported versions
 
-This policy covers the current GitHub-private staging phase and the planned
-GitHub public alpha. Treat every release as experimental until the repository
-owner explicitly completes the visibility decision and announces a stable
-release policy. npm publication remains disabled independently.
+Skills Manager is a public alpha. Security fixes target the latest published
+`0.4.0-alpha` release and `main`; older alpha snapshots are not maintained
+separately. There is no stable release or long-term support policy yet.
+[npm publication remains disabled](CONTRIBUTING.md).
 
 ## Reporting a vulnerability
 
-Open a GitHub security advisory or contact the repository owner through GitHub.
-Do not include secrets, tokens, browser session files, or exploit payloads in
-issue reports.
+Report suspected vulnerabilities privately through
+[GitHub private vulnerability reporting](https://github.com/evandro-miguel/skills-manager/security/advisories/new).
+Include the affected version or commit, expected and observed behavior, impact,
+and minimal reproduction steps using synthetic data.
 
-## Security baseline
+Do not disclose vulnerabilities in public issues or pull requests before
+coordinating with the maintainer. Never send real credentials, tokens, cookies,
+browser session files, or personal skill contents. Use placeholders and a
+minimal synthetic proof of concept instead.
 
-Required local gates before release work:
+## Response and coordinated disclosure
 
-```bash
-bun run validate
-bun run scan:privacy
-bun run public:audit
-bun run packlist
-```
+The maintainer reviews private reports on a best-effort basis; this alpha has
+no guaranteed response or remediation timeline. Follow up in the same private
+report if an acknowledgement is delayed. The maintainer will coordinate
+validation, remediation, and disclosure timing there. A confirmed vulnerability
+should receive a fix or documented mitigation before public disclosure where
+practical, with affected versions and remediation described in a
+[security advisory](https://github.com/evandro-miguel/skills-manager/security/advisories).
 
-Release hardening targets:
+## Security baseline and limitations
 
-- immutable source commit and tag checks;
-- source checksum;
-- release manifest;
-- Skill BOM;
-- signed release artifacts;
-- optional GitHub artifact attestations when repository eligibility allows it;
-- npm provenance only after package publishing is intentionally enabled.
+Run `bun run validate:publish` before a release. This includes tests, privacy
+and public-surface scans, dependency auditing, complete reachable-history
+checks, and package validation. Hosted CodeQL and OpenSSF Scorecard provide
+additional analysis; their successful execution is not a security guarantee.
+
+Skills are untrusted content. Review their instructions and bundled scripts
+before installation. Generated sandbox plans and provider projections do not
+establish enforced runtime isolation. See the
+[release readiness contract](docs/release-readiness.md) for remaining release
+and platform evidence requirements.

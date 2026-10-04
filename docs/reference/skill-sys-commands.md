@@ -588,7 +588,7 @@ columns. Takes explicit files, or scans the `skills/` tree by default. Prints
 `skill-metadata sync --staged --write` only when BOTH `--fix` and `--staged`
 are set (a `--base ... --fix` run skips metadata sync), and
 `markdown-strict-batch-fix.ts`
-plus `markdownlint-cli2 --fix` when `--fix` is set (`--restage` re-adds fixed
+plus `markdownlint --fix` when `--fix` is set (`--restage` re-adds fixed
 files), lint the changed Markdown, run `check-skill.js` per changed skill
 directory, `markdown-link-guard --no-wikilinks skills`,
 `universal-contract --skills-root skills`, and `skillpool validate --source
