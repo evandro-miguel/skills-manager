@@ -175,6 +175,14 @@ clone), `--ref <tag|branch|sha>` (default: `main`), `--target <dir>`,
 `--profile <name>` (default: `core`), `--skills <csv>`,
 `--verify-signed-tag`, `--expected-source-sha256 <hex>`. Dispatched by
 `skill-sys setup` (alias: `quick-install`). Backend: `quick-install.ts`.
+With `--project`, also supply `--policy-file <json>`, `--source-lock <file>`,
+`--source-entry <name>`, and `--projection-dir <dir>` for the same strict
+evidence contract as `init`. Missing evidence options are rejected before any
+fetch or mutation. After fetching and verifying the source checksum, the trusted
+bootstrap previews the supplied evidence before global sync; actual installation
+then validates the materialized source and projection digests. The fetched
+checkout is passed as `--source`; scripts from that checkout are never executed.
+Use `--no-global-sync` for a project-only installation.
 
 `upgrade-project.ts`
 : Upgrade one project's skills lockfile ref and verify the result with a

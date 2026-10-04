@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Restore project bootstrap through `setup`/`quick-install` with explicit strict evidence, reject missing evidence before fetching, and preview the verified bootstrap before global sync.
 - Make `init --dry-run` validate bootstrap inputs and preview actions without reading an existing lockfile, writing files, or running installation and doctor checks.
 - Forward strict offline evidence and projection options through the public `init` command.
 - Keep installation-only projection options out of the subsequent doctor command.

@@ -30,6 +30,10 @@ interface QuickInstallArgs {
   syncGlobals: string[];
   globalSync: boolean;
   project?: string;
+  policyFile?: string;
+  sourceLock?: string;
+  sourceEntry?: string;
+  projectionDir?: string;
   apps: string[];
   profile: string;
   skills: string[];
@@ -71,9 +75,7 @@ const TRUSTED_SYNC_GLOBAL_CORE_SCRIPT = path.join(__dirname, "sync-global-core.t
 const TRUSTED_BOOTSTRAP_SKILLS_SCRIPT = path.join(__dirname, "bootstrap-skills.ts");
 
 /**
- * Mirrors the remote-repository semantics of scripts/commands/bootstrap-skills.ts
- * REMOTE_REPO_PATTERNS so quick-install can fail closed before spawning a
- * bootstrap that the strict offline gate would refuse anyway.
+ * URL patterns used to reject unsafe source arguments before Git receives them.
  */
 const SCHEME_REMOTE_PATTERN = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//;
 const GIT_REMOTE_HELPER_PATTERN = /^[a-zA-Z][a-zA-Z0-9+.-]*::/;
@@ -148,6 +150,10 @@ Options:
   --sync-globals <csv>             Global core targets: opencode,codex,qwen,gemini-cli (default: manifest defaultApps)
   --no-global-sync                 Skip global sync
   --project <dir>                  Optional project to bootstrap with lockfile
+  --policy-file <json>             Complete strict policy (required with --project)
+  --source-lock <file>             Source-lock evidence relative to project (required with --project)
+  --source-entry <name>            Selected source-lock entry (required with --project)
+  --projection-dir <dir>           Prebuilt projections inside project (required with --project)
   --apps <csv>                     Project app labels for bootstrap (default: opencode; project installs target .agents/skills)
   --profile <name>                 Profile for bootstrap (default: core)
   --skills <csv>                   Extra direct skills for bootstrap
@@ -214,6 +220,12 @@ function parseArgs(argv: string[]): QuickInstallArgs {
     }
     if (token === "--project") {
       args.project = requireOptionValue(argv, i, token);
+      i += 1;
+      continue;
+    }
+    if (token === "--policy-file" || token === "--source-lock" || token === "--source-entry" || token === "--projection-dir") {
+      const field = { "--policy-file": "policyFile", "--source-lock": "sourceLock", "--source-entry": "sourceEntry", "--projection-dir": "projectionDir" }[token];
+      args[field] = requireOptionValue(argv, i, token);
       i += 1;
       continue;
     }
@@ -444,31 +456,38 @@ function buildBootstrapCommand(args: QuickInstallArgs): string[] {
     args.apps.join(","),
     "--profile",
     args.profile,
+    "--source",
+    args.target,
   ];
+  for (const [flag, value] of [
+    ["--policy-file", args.policyFile], ["--source-lock", args.sourceLock],
+    ["--source-entry", args.sourceEntry], ["--projection-dir", args.projectionDir],
+  ] as const) {
+    if (value) cmd.push(flag, value);
+  }
   if (args.skills.length) {
     cmd.push("--skills", args.skills.join(","));
   }
   return cmd;
 }
 
-function bootstrapProject(args: QuickInstallArgs, deps: Pick<QuickInstallDeps, "run"> = {}): void {
-  if (!args.project) {
-    return;
-  }
-  // Strict-bootstrap compatibility: a remote source requires policy,
-  // source-lock, and prebuilt projection evidence that quick-install cannot
-  // fabricate. Fail closed with actionable guidance; never weaken the strict
-  // offline gate by silently downgrading to a legacy trust-on-first-use flow.
-  if (isRemoteRepoArg(String(args.repo || args.target))) {
+function requireProjectEvidence(args: QuickInstallArgs): void {
+  if (!args.project) return;
+  if (!args.policyFile || !args.sourceLock || !args.sourceEntry || !args.projectionDir) {
     throw new Error(
-      "Refusing project bootstrap from a remote source. The strict offline bootstrap requires immutable evidence inputs:\n" +
+      "Project bootstrap requires strict offline evidence for every repository:\n" +
         "- --policy-file <json> (complete strict install policy)\n" +
         "- --source-lock <file> (v1 skill-sys.sources.lock.json evidence)\n" +
         "- --source-entry <name> (selected source-lock entry)\n" +
         "- --projection-dir <dir> (prebuilt provider projection artifacts)\n" +
-        "Run scripts/commands/bootstrap-skills.ts directly with those flags after verifying the source."
+        "Supply these flags to quick-install/setup, or use skill-sys init with a verified local source."
     );
   }
+}
+
+function bootstrapProject(args: QuickInstallArgs, deps: Pick<QuickInstallDeps, "run"> = {}): void {
+  if (!args.project) return;
+  requireProjectEvidence(args);
   (deps.run ?? run)(buildBootstrapCommand(args));
 }
 
@@ -496,9 +515,15 @@ function main(argv: string[] = process.argv, deps: QuickInstallDeps = {}): void 
     );
   }
 
+  requireProjectEvidence(args);
   ensureRepoFn(args);
   verifySourceFn(args);
   const runDeps = deps.run ? { run: deps.run } : {};
+  if (args.project) {
+    // Validate supplied policy, binding and paths before any global skill sync.
+    // The trusted bootstrap preview performs no install and writes no lock.
+    (deps.run ?? run)([...buildBootstrapCommand(args), "--dry-run"]);
+  }
   syncGlobalsFn(args, runDeps);
   bootstrapProjectFn(args, runDeps);
 

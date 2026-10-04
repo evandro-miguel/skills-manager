@@ -816,6 +816,10 @@ function buildSetupCommand(args: SkillSysArgs): SkillSysCommandPlan {
     ["skills", "--skills"],
     ["skill", "--skills"],
     ["expected-source-sha256", "--expected-source-sha256"],
+    ["policy-file", "--policy-file"],
+    ["source-lock", "--source-lock"],
+    ["source-entry", "--source-entry"],
+    ["projection-dir", "--projection-dir"],
   ]);
   appendBoolean(argv, args, "verify-signed-tag");
   appendBoolean(argv, args, "no-global-sync");

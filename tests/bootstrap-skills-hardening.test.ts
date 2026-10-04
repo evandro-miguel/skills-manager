@@ -376,7 +376,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
       });
     });
 
-    test("public init writes strict local evidence and completes install plus doctor", () => {
+    test.each(["init", "setup"])("public %s writes strict local evidence and completes install plus doctor", (command) => {
       withTempDir("bootstrap-public-local-install-", (root) => {
         const projectDir = path.join(root, "project");
         const repo = path.join(projectDir, "pack");
@@ -389,7 +389,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
           cmd: [
             process.execPath,
             path.join(repoRoot, "scripts/commands/skill-sys.ts"),
-            "init",
+            command,
             "--repo",
             repo,
             "--ref",
@@ -400,8 +400,10 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
             "codex",
             "--profile",
             "default",
-            "--source",
-            fixture.pack,
+            ...(command === "init" ? ["--source", fixture.pack] : [
+              "--target", path.join(root, "fetched source"),
+              "--no-global-sync", "--expected-source-sha256", fixture.checksum,
+            ]),
             "--policy-file",
             policyPath,
             "--source-lock",
@@ -419,7 +421,8 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
 
         const stdout = new TextDecoder().decode(result.stdout);
         const stderr = new TextDecoder().decode(result.stderr);
-        expect(stderr).toBe("");
+        if (command === "init") expect(stderr).toBe("");
+        expect(stderr).not.toContain("ERROR:");
         expect(result.exitCode).toBe(0);
         expect(stdout).toContain("Bound source-lock evidence:");
         expect(stdout).toContain("-> Verifying installation");

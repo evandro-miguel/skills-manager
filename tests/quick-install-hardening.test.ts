@@ -426,6 +426,10 @@ describe("quick-install trusted distribution scripts", () => {
           expected,
           "--project",
           projectDir,
+          "--policy-file", "policy.json",
+          "--source-lock", "sources.lock.json",
+          "--source-entry", "example-skill",
+          "--projection-dir", "projections",
         ],
         { ensureRepo: () => {}, verifySource: () => {}, run: recorder.run }
       );
@@ -511,6 +515,39 @@ describe("quick-install mutation evidence gate", () => {
 });
 
 describe("quick-install strict bootstrap compatibility gate", () => {
+  test("failed bootstrap preview prevents global sync and project installation", () => {
+    const sequence: string[] = [];
+    expect(() => quickInstall.main([
+      "bun", "quick-install.ts", "--project", "./project", "--expected-source-sha256", "a".repeat(64),
+      "--policy-file", "policy.json", "--source-lock", "sources.lock.json",
+      "--source-entry", "example-skill", "--projection-dir", "projections",
+    ], {
+      ensureRepo: () => { sequence.push("fetch"); },
+      verifySource: () => { sequence.push("verify"); },
+      run: ((argv: string[]) => {
+        expect(argv).toContain("--dry-run");
+        sequence.push("preview");
+        throw new Error("invalid evidence");
+      }) as typeof quickInstall.run,
+      syncGlobals: () => { sequence.push("sync"); },
+      bootstrapProject: () => { sequence.push("bootstrap"); },
+    })).toThrow("invalid evidence");
+    expect(sequence).toEqual(["fetch", "verify", "preview"]);
+  });
+
+  test("incomplete project evidence fails before fetch, verification, or global sync", () => {
+    const sequence: string[] = [];
+    expect(() => quickInstall.main([
+      "bun", "quick-install.ts", "--project", "./project", "--expected-source-sha256", "a".repeat(64),
+    ], {
+      ensureRepo: () => { sequence.push("fetch"); },
+      verifySource: () => { sequence.push("verify"); },
+      syncGlobals: () => { sequence.push("sync"); },
+      bootstrapProject: () => { sequence.push("bootstrap"); },
+    })).toThrow(/--policy-file/);
+    expect(sequence).toEqual([]);
+  });
+
   test("remote repo with --project fails closed with actionable strict-offline guidance", () => {
     const recorder = makeSuccessRecorder();
     for (const remote of [
@@ -522,16 +559,19 @@ describe("quick-install strict bootstrap compatibility gate", () => {
           run: recorder.run,
         })
       ).toThrow(
-        /Refusing project bootstrap from a remote source[\s\S]*--policy-file[\s\S]*--source-lock[\s\S]*--source-entry[\s\S]*--projection-dir/
+        /Project bootstrap requires strict offline evidence[\s\S]*--policy-file[\s\S]*--source-lock[\s\S]*--source-entry[\s\S]*--projection-dir/
       );
     }
     expect(recorder.calls).toEqual([]);
   });
 
-  test("local checkout bootstrap is allowed and uses the trusted script", () => {
+  test("local checkout bootstrap with explicit evidence uses the trusted script", () => {
     const recorder = makeSuccessRecorder();
     expect(() =>
-      quickInstall.bootstrapProject(baseArgs("/tmp/fetched-target", { project: "/tmp/proj" }), {
+      quickInstall.bootstrapProject(baseArgs("/tmp/fetched-target", {
+        project: "/tmp/proj", policyFile: "policy.json", sourceLock: "sources.lock.json",
+        sourceEntry: "example-skill", projectionDir: "projections",
+      }), {
         run: recorder.run,
       })
     ).not.toThrow();
