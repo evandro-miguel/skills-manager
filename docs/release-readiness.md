@@ -6,7 +6,7 @@ The engine and package retain the internal name `universall-skill-sys`.
 Release scope: **GitHub source alpha** at `evandro-miguel/skills-manager`.
 Hosted readiness is established for each release by its exact-commit Actions
 results and public clone rehearsal. The package is `private: true`,
-version `0.4.0-alpha.0`, and license `MIT`, so npm publication remains disabled.
+version `0.4.0-alpha.1`, and license `MIT`, so npm publication remains disabled.
 
 No local checkout, tag, tarball, or validation run proves hosted release
 readiness. Release claims require the checks below on the exact candidate and
@@ -348,8 +348,9 @@ The package must never include:
 - publication-only provenance artifacts before the provenance workflow is
   explicitly approved and active.
 
-## Staging Rule
+## Release Status
 
-Until every required gate passes and the owner approves publication, call this
-repository a **private staging repository for the public engine**. Do not call it
-a public release, and do not claim publication is enabled today.
+The repository is public and the owner has approved GitHub source alpha releases.
+Each new release still requires its own exact-commit validation and public clone
+rehearsal. An unpublished candidate is not a completed release. npm publication
+remains disabled and requires separate authorization.

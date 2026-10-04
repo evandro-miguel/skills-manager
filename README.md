@@ -6,7 +6,7 @@ portable skillpacks, builds provider projections, and installs selected skills
 with local checks and rollback support. The compatible `skillpool` command is
 also retained.
 
-Version **0.4.0-alpha.0** is a GitHub source alpha;
+Version **0.4.0-alpha.1** is a GitHub source alpha;
 npm publication remains disabled. See the [alpha release notes](CHANGELOG.md)
 for the included behavior and known limits.
 

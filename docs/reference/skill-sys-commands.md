@@ -1109,7 +1109,7 @@ In a future/publication or user-root release workflow approved by the
 maintainer,
 a pushed `vX.Y.Z` tag may run `.github/workflows/release-artifacts.yml` to sign
 committed files and upload the files plus `.sigstore.json` bundles to a GitHub
-Release. The base/public-engine staging repo must not treat this as an active
+Release. The public source-alpha repository must not treat this as an active
 publication path before explicit approval. GitHub/SLSA provenance attestations
 are created only when GitHub Artifact Attestations are available for the
 repository.

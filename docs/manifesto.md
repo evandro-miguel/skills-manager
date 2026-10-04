@@ -99,9 +99,9 @@ bun run packlist
 The package surface must be defined by `package.json#files` and the declared
 artifact surface. If those surfaces disagree, the release is blocked.
 
-`docs/release-readiness.md` is the staging contract for what must be true before
-any public visibility change or npm publication. Until that contract is met,
-this repository is private staging for the public engine, not a public release.
+`docs/release-readiness.md` defines the gates for each GitHub source alpha.
+The repository is public; each release requires exact-commit validation and
+a public clone rehearsal. npm publication remains separately disabled.
 
 ## Documentation Discipline
 

@@ -601,7 +601,7 @@ synthetic fixtures.
 
 Lockfile policy should distinguish integrity, origin, and provenance. The
 provenance workflow names in this section are future/publication examples or
-user-root release-policy examples only. The base/public-engine staging repo
+user-root release-policy examples only. The public source-alpha repository
 must not publish GitHub Release assets or require public-release provenance until
 the repository owner explicitly approves that release posture.
 

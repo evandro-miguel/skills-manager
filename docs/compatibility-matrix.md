@@ -158,7 +158,7 @@ project directories only.
   - `expectedSkillBomSha256`
 - Release tags may run `.github/workflows/release-artifacts.yml` only in a
   future/publication or staging release workflow after the repository owner
-  explicitly approves that release posture. The base/public-engine staging repo must not
+  explicitly approves that release posture. The public source-alpha repository must not
   publish GitHub Release assets by default.
 - Release CI must run `scripts/commands/release-verify.ts` before signing so
   the committed manifest and skill BOM match the checked-out source tree.

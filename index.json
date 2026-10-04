@@ -1,6 +1,6 @@
 {
   "name": "universall-skill-sys",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-alpha.1",
   "role": "base-public-engine-staging",
   "privateOverlay": "configured-out-of-band",
   "artifactSurfaces": {

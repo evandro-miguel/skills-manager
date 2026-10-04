@@ -3,7 +3,7 @@
 This roadmap tracks the next architecture wave for Skills Manager, whose engine
 package retains the name `universall-skill-sys`.
 
-The immediate milestone is the `0.4.0-alpha.0` GitHub source release: documented
+The immediate milestone is the `0.4.0-alpha.1` GitHub source release: documented
 local validation, projections, project installation, diagnostics and rollback.
 Publication depends on the [release gates](./release-readiness.md), exact-candidate
 review and the owner's publication decision. npm distribution, native-platform
@@ -153,7 +153,7 @@ bun scripts/commands/skill-sys.ts verify-origin --source . --version vX.Y.Z
 ```
 
 `metadata:audit`, `lifecycle:audit`, `doctor:all`, and `source:checksum` are
-not active package scripts in this base/private-staging repo.
+not active package scripts in this public source-alpha repository.
 
 Implementation issues:
 

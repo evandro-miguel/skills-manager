@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.4.0-alpha.1] - 2026-10-04
 
 ### Security
 

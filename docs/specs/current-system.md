@@ -42,7 +42,7 @@ The public fixture is synthetic and lives at
 
 The only shipped root skill is `skills/skill-sys/**`, which teaches agents how
 to operate the CLI. The public presentation name is Skills Manager; the package
-retains `universall-skill-sys` at `0.4.0-alpha.0`. Private catalog inventories are
+retains `universall-skill-sys` at `0.4.0-alpha.1`. Private catalog inventories are
 outside this public engine's scope. See the [alpha release notes](../../CHANGELOG.md)
 for the current candidate and its validation limits.
 
