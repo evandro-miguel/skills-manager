@@ -16,8 +16,8 @@
     "repoMutation": false
   },
   "invocation": {
-    "implicitAllowed": true,
-    "manualOnly": false,
+    "implicitAllowed": false,
+    "manualOnly": true,
     "requiresConfirmation": true
   }
 }

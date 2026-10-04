@@ -31,6 +31,23 @@ function readJson<T = unknown>(filePath: string): T {
 }
 
 describe("skillpack contract", () => {
+  test("the shipped skill-sys operator skill passes strict skillpack validation", () => {
+    const root = path.join(makeTempDir("shipped-skillpack-"), "pack");
+    skillpack.createSkillpack({ targetDir: root, name: "operator-skill-check" });
+    fs.cpSync(path.resolve(__dirname, "../skills/skill-sys"), path.join(root, "skills/skill-sys"), { recursive: true });
+    for (const relativePath of ["skillpack.json", "profiles/default.json"]) {
+      const filePath = path.join(root, relativePath);
+      const data = readJson<{ skills: string[] }>(filePath);
+      data.skills = ["skill-sys"];
+      fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`);
+    }
+    const result = captureCommand(() =>
+      validateCommand.main(["bun", "validate-skillpack.ts", "--source", root, "--strict"])
+    );
+    expect(result.stdout).toContain("STATUS: PASS");
+    expect(result.code).toBe(0);
+  });
+
   test("create-skillpack writes a sanitized scaffold that validate-skillpack accepts", () => {
     const root = path.join(makeTempDir("skillpack-create-"), "public-example");
 

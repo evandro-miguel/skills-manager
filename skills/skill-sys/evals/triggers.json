@@ -1,0 +1,22 @@
+{
+  "positive": [
+    {
+      "prompt": "Use skill-sys to validate this skillpack.",
+      "expectedSkill": "skill-sys"
+    },
+    {
+      "prompt": "Use skill-sys to preview installing this skill into my project.",
+      "expectedSkill": "skill-sys"
+    }
+  ],
+  "negative": [
+    {
+      "prompt": "Explain generally what an AI agent is.",
+      "mustNotTrigger": "skill-sys"
+    },
+    {
+      "prompt": "Fix the spelling in this README.",
+      "mustNotTrigger": "skill-sys"
+    }
+  ]
+}
