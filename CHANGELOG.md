@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+
+- Limit CodeQL and Scorecard write permissions to their analysis jobs and remove unused Scorecard OIDC access.
+- Add 5,000 generated source-boundary cases to CI, covering credentials, private networks, catalog references, and Git refs.
+- Replace the Markdown lint runner to remove vulnerable `braces` (GHSA-vfj7-8cjw-p6xm), preserving the existing rules. Pin its `js-yaml` dependency to patched version 5.4.1 (GHSA-r3ph-w7gj-g6xm).
+- Document private vulnerability reporting, alpha support, and coordinated disclosure.
+- Add candidate-tag CI so maintainers can update protected `main` without publishing development branches. Require passing GitHub Actions checks and block force pushes and branch deletion, including for administrators.
+
 ## [0.4.0-alpha.0] - 2026-10-02
 
 Skills Manager's first public GitHub source alpha. The package
