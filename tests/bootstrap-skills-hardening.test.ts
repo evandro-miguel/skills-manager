@@ -46,6 +46,57 @@ function initializeTestGitRepo(root: string): string {
   return gitOutput(root, ["rev-parse", "HEAD"]);
 }
 
+interface MaterializedFixture {
+  projectDir: string;
+  pack: string;
+  sourcesLockPath: string;
+  commit: string;
+  checksum: string;
+  projectionMeta: { canonicalDigest: string; projectionDigest: string; rendererVersion: number };
+}
+
+function createMaterializedFixture(projectDir: string, repo: string = REMOTE_REPO): MaterializedFixture {
+  fs.mkdirSync(projectDir, { recursive: true });
+  const pack = path.join(projectDir, "pack");
+  fs.cpSync(examplePack, pack, { recursive: true });
+  const commit = initializeTestGitRepo(pack);
+  // The policy pins sourceCommit against ref resolution in the checkout, so
+  // materialize the locked ref as a tag.
+  gitOutput(pack, ["tag", REF]);
+  const layout = sourceModule.resolveSourceLayout(pack, { requireSkills: true });
+  const checksum = sourceModule.computeSourceChecksum(pack, layout);
+
+  const projectionsDir = path.join(projectDir, "projections");
+  projections.buildProjections({
+    sourceRoot: pack,
+    providers: ["codex"],
+    outDir: projectionsDir,
+    clean: true,
+  });
+  const projectionMeta = JSON.parse(
+    fs.readFileSync(path.join(projectionsDir, "codex", SKILL, "projection.meta.json"), "utf8")
+  ) as MaterializedFixture["projectionMeta"];
+
+  fs.mkdirSync(path.join(projectDir, "evidence"), { recursive: true });
+  const sourcesLockPath = path.join(projectDir, "evidence", "sources.lock.json");
+  sourceLockModule.writeSourceLock(sourcesLockPath, {
+    version: 1,
+    generatedAt: "2026-08-22T00:00:00.000Z",
+    sources: [
+      {
+        name: SKILL,
+        source: repo,
+        ref: REF,
+        resolvedCommit: commit,
+        manifestPath: `skills/${SKILL}/SKILL.md`,
+        resolvedAt: "2026-08-22T00:00:00.000Z",
+      },
+    ],
+  });
+
+  return { projectDir, pack, sourcesLockPath, commit, checksum, projectionMeta };
+}
+
 function makeRecorder(code = 0): {
   calls: string[][];
   run: (args: string[], options?: unknown) => { code: number; stdout: string; stderr: string };
@@ -95,8 +146,29 @@ function bootstrapLevelPolicy(commit: string): Record<string, unknown> {
   };
 }
 
+function strictPolicyForFixture(fixture: MaterializedFixture): Record<string, unknown> {
+  return {
+    requireSourceCommit: true,
+    sourceCommit: fixture.commit,
+    requireSourceChecksum: true,
+    expectedSourceSha256: fixture.checksum,
+    requireProjectionDigests: true,
+    expectedProjectionDigests: [
+      {
+        provider: "codex",
+        skill: SKILL,
+        canonicalDigest: fixture.projectionMeta.canonicalDigest,
+        projectionDigest: fixture.projectionMeta.projectionDigest,
+        rendererVersion: fixture.projectionMeta.rendererVersion,
+      },
+    ],
+  };
+}
+
 function strictBootstrapArgs(options: {
   projectDir: string;
+  repo?: string;
+  ref?: string;
   policyFile?: string;
   omitPolicyFile?: boolean;
   sourceLock?: string;
@@ -111,9 +183,9 @@ function strictBootstrapArgs(options: {
     "--project",
     options.projectDir,
     "--repo",
-    REMOTE_REPO,
+    options.repo ?? REMOTE_REPO,
     "--ref",
-    REF,
+    options.ref ?? REF,
     "--apps",
     "codex",
     "--skills",
@@ -152,7 +224,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
   });
 
   describe("bootstrap command", () => {
-    function seedProject(root: string, commit: string): { projectDir: string; sourceDir: string } {
+    function seedProject(root: string, commit: string, repo: string = REMOTE_REPO): { projectDir: string; sourceDir: string } {
       const projectDir = path.join(root, "project");
       const sourceDir = path.join(root, "materialized-source");
       fs.mkdirSync(projectDir, { recursive: true });
@@ -166,7 +238,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
         sources: [
           {
             name: SKILL,
-            source: REMOTE_REPO,
+            source: repo,
             ref: REF,
             resolvedCommit: commit,
             manifestPath: `skills/${SKILL}/SKILL.md`,
@@ -225,6 +297,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
     test("dry-run validates and prints actions without writing the lockfile", () => {
       withTempDir("bootstrap-strict-dry-", (root) => {
         const { projectDir, sourceDir } = seedProject(root, "a".repeat(40));
+        const recorder = makeRecorder();
         const result = commandHelpers.captureCommand(() =>
           bootstrap.main(
             strictBootstrapArgs({
@@ -236,13 +309,14 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
               projectionDir: "projections",
               extra: ["--dry-run"],
             }),
-            depsWith(() => REMOTE_REPO, makeRecorder())
+            depsWith(() => REMOTE_REPO, recorder)
           )
         );
 
         expect(result.code).toBe(0);
         expect(result.stdout).toContain("(dry-run)");
         expect(fs.existsSync(path.join(projectDir, ".skills.lock.json"))).toBe(false);
+        expect(recorder.calls).toHaveLength(0);
 
         // Dry-run still fails closed on incomplete evidence.
         const invalid = commandHelpers.captureCommand(() =>
@@ -262,6 +336,146 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
         expect(invalid.code).toBe(1);
         expect(invalid.stderr).toContain("--policy-file");
         expect(fs.existsSync(path.join(projectDir, ".skills.lock.json"))).toBe(false);
+      });
+    });
+
+    test("public init forwards strict offline evidence and rejects mismatched entries", () => {
+      withTempDir("bootstrap-public-strict-", (root) => {
+        const { projectDir, sourceDir } = seedProject(root, "a".repeat(40));
+        const before = fs.readdirSync(projectDir);
+        for (const sourceEntry of [SKILL, "missing-entry"]) {
+          const args = strictBootstrapArgs({
+            projectDir,
+            sourceLock: "evidence/sources.lock.json",
+            sourceEntry,
+            source: sourceDir,
+            projectionDir: "projections",
+            extra: ["--dry-run"],
+          });
+          const result = Bun.spawnSync({
+            cmd: [process.execPath, path.join(repoRoot, "scripts/commands/skill-sys.ts"), "init", ...args.slice(2)],
+            cwd: repoRoot,
+            stdout: "pipe",
+            stderr: "pipe",
+          });
+          const stdout = new TextDecoder().decode(result.stdout);
+          const stderr = new TextDecoder().decode(result.stderr);
+          if (sourceEntry === SKILL) {
+            expect(stderr).toBe("");
+            expect(result.exitCode).toBe(0);
+            expect(stdout).toContain("Bound source-lock evidence:");
+            expect(stdout).toContain(path.join(projectDir, "projections"));
+            expect(stdout).toContain("Installation and doctor checks were not run");
+          } else {
+            expect(result.exitCode).toBe(1);
+            expect(stderr).toContain("missing-entry");
+            expect(stdout).not.toContain("Installer argv");
+          }
+          expect(fs.readdirSync(projectDir)).toEqual(before);
+        }
+      });
+    });
+
+    test("public init writes strict local evidence and completes install plus doctor", () => {
+      withTempDir("bootstrap-public-local-install-", (root) => {
+        const projectDir = path.join(root, "project");
+        const repo = path.join(projectDir, "pack");
+        const fixture = createMaterializedFixture(projectDir, repo);
+        const policyPath = writePolicyFile(projectDir, strictPolicyForFixture(fixture));
+        const homeDir = path.join(root, "isolated-home");
+        fs.mkdirSync(homeDir);
+
+        const result = Bun.spawnSync({
+          cmd: [
+            process.execPath,
+            path.join(repoRoot, "scripts/commands/skill-sys.ts"),
+            "init",
+            "--repo",
+            repo,
+            "--ref",
+            REF,
+            "--project",
+            projectDir,
+            "--apps",
+            "codex",
+            "--profile",
+            "default",
+            "--source",
+            fixture.pack,
+            "--policy-file",
+            policyPath,
+            "--source-lock",
+            "evidence/sources.lock.json",
+            "--source-entry",
+            SKILL,
+            "--projection-dir",
+            "projections",
+          ],
+          cwd: repoRoot,
+          env: { ...process.env, SKILLPOOL_HOME: homeDir },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+
+        const stdout = new TextDecoder().decode(result.stdout);
+        const stderr = new TextDecoder().decode(result.stderr);
+        expect(stderr).toBe("");
+        expect(result.exitCode).toBe(0);
+        expect(stdout).toContain("Bound source-lock evidence:");
+        expect(stdout).toContain("-> Verifying installation");
+        expect(stdout).toContain("STATUS: PASS");
+        expect(stdout).toContain("Done: skills installed and verified.");
+
+        const lock = JSON.parse(fs.readFileSync(path.join(projectDir, ".skills.lock.json"), "utf8")) as Record<string, unknown>;
+        expect(lock.policy).toEqual(strictPolicyForFixture(fixture));
+        expect(lock.sourceLock).toEqual({
+          path: "evidence/sources.lock.json",
+          sha256: sha256Bytes(fixture.sourcesLockPath),
+          entryName: SKILL,
+        });
+        expect(fs.existsSync(path.join(projectDir, ".agents", "skills", SKILL))).toBe(true);
+        expect(fs.existsSync(path.join(projectDir, ".skills.state.json"))).toBe(true);
+        expect(fs.readdirSync(homeDir)).toEqual([]);
+      });
+    });
+
+    test.each([false, true])("init dry-run previews without reading or changing a prior lock (exists=%s)", (existingLock) => {
+      withTempDir("bootstrap-init-preview-", (root) => {
+        const projectDir = path.join(root, "project with spaces");
+        const repo = path.join(projectDir, "pack");
+        const fixture = createMaterializedFixture(projectDir, repo);
+        writePolicyFile(projectDir, strictPolicyForFixture(fixture));
+        const homeDir = path.join(root, "isolated-home");
+        fs.mkdirSync(homeDir);
+        const lockName = "preview.lock.json";
+        const lockPath = path.join(projectDir, lockName);
+        const beforeEntries = fs.readdirSync(projectDir).sort();
+        // An existing lock must not become the input to a preview of its replacement.
+        const original = "existing lock must remain untouched\n";
+        if (existingLock) fs.writeFileSync(lockPath, original);
+        const result = Bun.spawnSync({
+          cmd: [process.execPath, path.join(repoRoot, "scripts/commands/skill-sys.ts"), "init",
+            "--repo", repo, "--ref", REF, "--source", fixture.pack, "--project", projectDir,
+            "--apps", "codex", "--profile", "default", "--skills", SKILL,
+            "--policy-file", path.join(projectDir, "strict-policy.json"),
+            "--source-lock", "evidence/sources.lock.json", "--source-entry", SKILL,
+            "--projection-dir", "projections", "--lockfile", lockName, "--dry-run",
+            ...(existingLock ? ["--force"] : [])],
+          cwd: repoRoot,
+          env: { ...process.env, SKILLPOOL_HOME: homeDir },
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const stdout = new TextDecoder().decode(result.stdout);
+        expect(new TextDecoder().decode(result.stderr)).toBe("");
+        expect(result.exitCode).toBe(0);
+        expect(stdout).toContain("Installation and doctor checks were not run");
+        expect(stdout).toContain(lockName);
+        expect(fs.readdirSync(projectDir).sort()).toEqual(
+          existingLock ? [...beforeEntries, lockName].sort() : beforeEntries
+        );
+        if (existingLock) expect(fs.readFileSync(lockPath, "utf8")).toBe(original);
+        expect(fs.readdirSync(homeDir)).toEqual([]);
       });
     });
 
@@ -285,7 +499,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
           )
         );
         expect(missing.code).toBe(1);
-        expect(missing.stderr).toContain("Refusing legacy remote bootstrap");
+        expect(missing.stderr).toContain("Refusing bootstrap without strict offline evidence");
         expect(missing.stderr).toContain("--policy-file");
         expect(fs.existsSync(path.join(projectDir, ".skills.lock.json"))).toBe(false);
 
@@ -489,7 +703,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
       });
     });
 
-    test("local directory repos keep the legacy flow", () => {
+    test("local repo identities fail before lock creation without strict evidence", () => {
       withTempDir("bootstrap-local-flow-", (root) => {
         const projectDir = path.join(root, "project");
         const localRepo = path.join(root, "local-skills-repo");
@@ -498,32 +712,16 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
         const recorder = makeRecorder();
         const result = commandHelpers.captureCommand(() =>
           bootstrap.main(
-            [
-              "bun",
-              "scripts/commands/bootstrap-skills.ts",
-              "--project",
-              projectDir,
-              "--repo",
-              localRepo,
-              "--ref",
-              REF,
-              "--apps",
-              "codex",
-              "--skills",
-              SKILL,
-              "--refresh-cache",
-            ],
+            strictBootstrapArgs({ projectDir, repo: localRepo, omitPolicyFile: true }),
             depsWith(() => localRepo, recorder)
           )
         );
 
-        expect(result.code).toBe(0);
-        const lock = JSON.parse(fs.readFileSync(path.join(projectDir, ".skills.lock.json"), "utf8")) as Record<string, unknown>;
-        expect(lock.policy).toBeUndefined();
-        expect(lock.sourceLock).toBeUndefined();
-        const argv = recorder.calls[0]!.join(" ");
-        expect(argv).toContain("--refresh-cache");
-        expect(argv).not.toContain("--projection-dir");
+        expect(result.code).toBe(1);
+        expect(result.stderr).toContain("strict offline evidence");
+        expect(result.stderr).toContain("--policy-file");
+        expect(fs.existsSync(path.join(projectDir, ".skills.lock.json"))).toBe(false);
+        expect(recorder.calls).toHaveLength(0);
       });
     });
   });
@@ -551,43 +749,7 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
 
     function createFixture(root: string, repo: string = REMOTE_REPO): Fixture {
       const projectDir = path.join(root, "project");
-      fs.mkdirSync(projectDir, { recursive: true });
-      const pack = path.join(projectDir, "pack");
-      fs.cpSync(examplePack, pack, { recursive: true });
-      const commit = initializeTestGitRepo(pack);
-      // The policy pins sourceCommit against ref resolution in the checkout,
-      // so materialize the locked ref as a tag.
-      gitOutput(pack, ["tag", REF]);
-      const layout = sourceModule.resolveSourceLayout(pack, { requireSkills: true });
-      const checksum = sourceModule.computeSourceChecksum(pack, layout);
-
-      const projectionsDir = path.join(projectDir, "projections");
-      projections.buildProjections({
-        sourceRoot: pack,
-        providers: ["codex"],
-        outDir: projectionsDir,
-        clean: true,
-      });
-      const meta = JSON.parse(
-        fs.readFileSync(path.join(projectionsDir, "codex", SKILL, "projection.meta.json"), "utf8")
-      ) as { canonicalDigest: string; projectionDigest: string; rendererVersion: number };
-
-      fs.mkdirSync(path.join(projectDir, "evidence"), { recursive: true });
-      const sourcesLockPath = path.join(projectDir, "evidence", "sources.lock.json");
-      sourceLockModule.writeSourceLock(sourcesLockPath, {
-        version: 1,
-        generatedAt: "2026-08-22T00:00:00.000Z",
-        sources: [
-          {
-            name: SKILL,
-            source: repo,
-            ref: REF,
-            resolvedCommit: commit,
-            manifestPath: `skills/${SKILL}/SKILL.md`,
-            resolvedAt: "2026-08-22T00:00:00.000Z",
-          },
-        ],
-      });
+      const materialized = createMaterializedFixture(projectDir, repo);
 
       // Simulate what bootstrap wrote: primary lock with complete policy pins
       // plus the source-lock evidence binding over the exact file bytes.
@@ -598,25 +760,10 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
             repo: repo,
             ref: REF,
             installs: [{ app: "codex", skills: [SKILL] }],
-            policy: {
-              requireSourceCommit: true,
-              sourceCommit: commit,
-              requireSourceChecksum: true,
-              expectedSourceSha256: checksum,
-              requireProjectionDigests: true,
-              expectedProjectionDigests: [
-                {
-                  provider: "codex",
-                  skill: SKILL,
-                  canonicalDigest: meta.canonicalDigest,
-                  projectionDigest: meta.projectionDigest,
-                  rendererVersion: meta.rendererVersion,
-                },
-              ],
-            },
+            policy: strictPolicyForFixture(materialized),
             sourceLock: {
               path: "evidence/sources.lock.json",
-              sha256: sha256Bytes(sourcesLockPath),
+              sha256: sha256Bytes(materialized.sourcesLockPath),
               entryName: SKILL,
             },
           },
@@ -625,7 +772,12 @@ describe("W8 strict offline bootstrap/source-lock evidence binding", () => {
         )}\n`
       );
 
-      return { projectDir, pack, sourcesLockPath, commit };
+      return {
+        projectDir: materialized.projectDir,
+        pack: materialized.pack,
+        sourcesLockPath: materialized.sourcesLockPath,
+        commit: materialized.commit,
+      };
     }
 
     function runInstall(fixture: Fixture): { code: number; stdout: string; stderr: string } {

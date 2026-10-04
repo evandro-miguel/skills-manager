@@ -165,7 +165,10 @@ function main(
   console.log("-> Installing skills from lockfile");
   runSkillpoolFn("install", common);
 
-  const doctorFlags = common.filter((flag) => flag !== "--dry-run");
+  const doctorOptions = { ...options };
+  delete doctorOptions.projectionDir;
+  delete doctorOptions.dryRun;
+  const doctorFlags = buildCommonFlags(doctorOptions);
   if (options.strictHash) {
     doctorFlags.push("--strict-hash");
   }

@@ -179,6 +179,7 @@ const VALUE_OPTIONS = new Set([
   "max-budget",
   "memory",
   "name",
+  "policy-file",
   "profile",
   "projection-dir",
   "projection-store-dir",
@@ -202,6 +203,7 @@ const VALUE_OPTIONS = new Set([
   "source-digest",
   "source-commit",
   "source-entry",
+  "source-lock",
   "stack",
   "summary",
   "surface",
@@ -834,6 +836,10 @@ function buildInitCommand(args: SkillSysArgs): SkillSysCommandPlan {
     ["skills", "--skills"],
     ["skill", "--skills"],
     ["source", "--source"],
+    ["policy-file", "--policy-file"],
+    ["source-lock", "--source-lock"],
+    ["source-entry", "--source-entry"],
+    ["projection-dir", "--projection-dir"],
   ]);
   appendBoolean(argv, args, "force");
   appendBoolean(argv, args, "refresh-cache");

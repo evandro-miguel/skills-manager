@@ -131,16 +131,26 @@ notification pipelines). Options: `--source <dir>`, `--manifest <path>`,
 dispatcher command. Backend: `install-skills.ts`.
 
 `bootstrap-skills.ts`
-: Bootstrap a project with a `.skills.lock.json` and install its skills: write
-the lockfile from `--repo`/`--ref`/`--apps`/`--profile`/`--skills` (refuses to
-overwrite an existing lockfile without `--force`), then run `install-skills.ts`
-(install + doctor). Options: `--repo <git-url-or-path>` (default: OpenCode
-origin; fallback local path), `--project <dir>`, `--ref <tag|branch|sha>`
-(default: `main`), `--lockfile <file>` (default: `.skills.lock.json`),
-`--apps <csv>` (default: `opencode`; project installs target `.agents/skills`),
-`--profile <name>` (default: `core`), `--skills <csv>`, `--source <dir>`,
-`--force`, `--refresh-cache`, `--strict-hash`, `--dry-run`. Dispatched by
-`skill-sys init` (alias: `init-project`). Backend: `bootstrap-skills.ts`.
+: Bootstrap a project with a `.skills.lock.json` and install its skills. Every
+bootstrap requires strict offline evidence, including when `--repo` is a local
+directory: a complete `--policy-file <json>`, a selected entry from a v1
+`--source-lock <file>` via `--source-entry <name>`, a materialized local
+`--source <dir>`, and a prebuilt `--projection-dir <dir>`. The evidence must
+bind the repository, ref, source commit, source checksum, and installed
+projection digests. Bootstrap validates the constructed lock before writing
+it, then runs `install-skills.ts` (install + doctor); it refuses to overwrite
+an existing lockfile without `--force`. Options also include
+`--repo <git-url-or-path>` (default: OpenCode origin; fallback local path),
+`--project <dir>`, `--ref <tag|branch|sha>` (default: `main`),
+`--lockfile <file>` (default: `.skills.lock.json`), `--apps <csv>` (default:
+`opencode`; project installs target `.agents/skills`), `--profile <name>`
+(default: `core`), `--skills <csv>`, `--force`, `--strict-hash`, and
+`--dry-run`.
+`--refresh-cache` is rejected by the offline bootstrap. Dry-run validates the
+evidence and previews actions without writing the lock or running install and
+doctor. For local non-Git skillpacks, use the direct source-based command
+instead: `skill-sys install --source <dir> --projection-dir <dir> --agent <id> --skill <name>`. Dispatched by `skill-sys init` (alias: `init-project`).
+Backend: `bootstrap-skills.ts`.
 
 `ensure-skill.ts`
 : On-demand installer that ensures one skill is present for the selected app;

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- Make `init --dry-run` validate bootstrap inputs and preview actions without reading an existing lockfile, writing files, or running installation and doctor checks.
+- Forward strict offline evidence and projection options through the public `init` command.
+- Keep installation-only projection options out of the subsequent doctor command.
+- Reject incomplete bootstrap evidence before writing a lockfile, including for local repository paths, matching the installer's strict lockfile contract.
+- Require explicit invocation of the shipped `skill-sys` operator skill and include trigger fixtures for strict skillpack validation.
+
 ## [0.4.0-alpha.1] - 2026-10-04
 
 ### Security

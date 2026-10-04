@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 /**
- * Bootstrap a project with a .skills.lock.json and install skills.
+ * Bootstrap a project lockfile from strict offline evidence and install skills.
  *
  * Flow:
  * 1) generate/overwrite lockfile from --repo/--ref/--apps/--profile/--skills
  * 2) run install-skills.ts (install + doctor)
  *
- * Remote repositories use a strict offline flow: the caller must supply a
+ * Every bootstrap uses the strict offline flow: the caller must supply a
  * complete strict policy (--policy-file), a v1 skill-sys.sources.lock.json
  * evidence file plus selected entry (--source-lock/--source-entry), a locally
  * materialized source checkout (--source), and prebuilt projection artifacts
@@ -73,40 +73,35 @@ const INSTALLER = path.join(SCRIPT_DIR, "install-skills.ts");
 const UNIVERSAL_ROOT = path.resolve(SCRIPT_DIR, "../..");
 const OPENCODE_ROOT = path.resolve(SCRIPT_DIR, "..", "..", "..", "..");
 
-const REMOTE_REPO_PATTERNS = [
-  /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//, // scheme URLs (https://, ssh://, ...)
-  /^[^/@]+@[^:/]+:/, // scp-like syntax (git@host:path)
-];
-
 function help(): void {
   console.log(`
-Bootstrap project skills from private git repo
+Bootstrap a project from strict offline evidence
 
 Usage:
   bun scripts/commands/bootstrap-skills.ts [options]
 
 Optional:
-  --repo <git-url-or-path>      Skills repository (default: OpenCode origin; fallback local path)
+  --repo <git-url-or-path>      Skills repository identity (default: OpenCode origin; fallback local path)
   --project <dir>               Project directory (default: current directory)
   --ref <tag|branch|sha>        Git ref (default: main)
   --lockfile <file>             Lockfile name/path relative to project (default: .skills.lock.json)
   --apps <csv>                  Project app labels to install (default: opencode; project installs target .agents/skills)
   --profile <name>              Profile name for each app (default: core)
   --skills <csv>                Extra direct skills for each app (optional)
-  --source <dir>                Local source override for install step (required for remote repos)
-  --policy-file <json>          Complete strict install policy JSON (required for remote repos)
-  --source-lock <file>          skill-sys.sources.lock.json v1 evidence file (required for remote repos)
-  --source-entry <name>         Selected source-lock entry name (required for remote repos)
-  --projection-dir <dir>        Prebuilt provider projections directory (required for remote repos)
+  --source <dir>                Local materialized source checkout (required)
+  --policy-file <json>          Complete strict install policy JSON (required)
+  --source-lock <file>          skill-sys.sources.lock.json v1 evidence file (required)
+  --source-entry <name>         Selected source-lock entry name (required)
+  --projection-dir <dir>        Prebuilt provider projections directory (required)
   --force                       Overwrite lockfile if it exists
-  --refresh-cache               Refresh source cache before install (rejected for remote repos)
+  --refresh-cache               Refresh source cache before install (rejected by strict offline bootstrap)
   --strict-hash                 Run doctor with strict hash
-  --dry-run                     Print actions without writing files
+  --dry-run                     Validate bootstrap inputs and preview actions; skip install and doctor
   --help                        Show help
 
 Examples:
-  bun scripts/commands/bootstrap-skills.ts --project .
-  bun scripts/commands/bootstrap-skills.ts --repo git@github.com:you/skills-pool.git --apps opencode --profile core --skills writing-skills
+  bun scripts/commands/bootstrap-skills.ts --repo ./skills --ref v1 --project . --apps codex --skills writing-skills --source ./skills --policy-file ./strict-policy.json --source-lock ./evidence/sources.lock.json --source-entry writing-skills --projection-dir ./projections
+  skill-sys install --source ./skills --projection-dir ./projections --agent codex --skill writing-skills
 `);
 }
 
@@ -120,22 +115,6 @@ function detectDefaultRepo(): string {
     opencodeRoot: OPENCODE_ROOT,
     exists: fileExists,
   });
-}
-
-/**
- * A repo is remote unless it names an existing local directory. Unknown or
- * nonexistent values are treated as remote so the strict offline gate fails
- * closed instead of silently attempting a fetch.
- */
-function isRemoteRepo(repo: string): boolean {
-  if (REMOTE_REPO_PATTERNS.some((pattern) => pattern.test(repo))) {
-    return true;
-  }
-  try {
-    return !fs.statSync(repo).isDirectory();
-  } catch (_error) {
-    return true;
-  }
 }
 
 function requireRegularFile(filePath: string, label: string): void {
@@ -167,7 +146,7 @@ function buildInstalls(options: BootstrapArgs): Array<{ app: string; profile?: s
 }
 
 /**
- * Assemble the strict offline evidence required by remote bootstraps. Every
+ * Assemble the strict offline evidence required by all bootstraps. Every
  * input is validated here, before any byte is written: the policy must be a
  * regular non-symlink file that is complete under the existing remote lockfile
  * policy validator, and the v1 source lock must be a project-contained regular
@@ -202,7 +181,7 @@ function assembleStrictOfflineEvidence(
   }
   if (missing.length) {
     throw new Error(
-      `Refusing legacy remote bootstrap (no silent trust-on-first-use migration). Remote bootstrap requires strict offline evidence inputs:\n- ${missing.join("\n- ")}`
+      `Refusing bootstrap without strict offline evidence:\n- ${missing.join("\n- ")}`
     );
   }
 
@@ -297,10 +276,13 @@ function buildLockObject(options: BootstrapArgs): Record<string, unknown> {
     installs,
   };
 
-  if (isRemoteRepo(String(options.repo))) {
-    const evidence = assembleStrictOfflineEvidence(options, installs);
-    lock.policy = evidence.policy;
-    lock.sourceLock = evidence.sourceLockBinding;
+  const evidence = assembleStrictOfflineEvidence(options, installs);
+  lock.policy = evidence.policy;
+  lock.sourceLock = evidence.sourceLockBinding;
+
+  const validationErrors = validateLockShape(lock);
+  if (validationErrors.length) {
+    throw new Error(`Constructed bootstrap lock is invalid:\n- ${validationErrors.join("\n- ")}`);
   }
 
   return lock;
@@ -444,7 +426,8 @@ function writeLockfile(options: BootstrapArgs): string {
     writeJson(lockfilePath, lock);
   }
 
-  console.log(`Lockfile ${exists ? "updated" : "created"}: ${lockfilePath}${options.dryRun ? " (dry-run)" : ""}`);
+  const action = options.dryRun ? `would be ${exists ? "updated" : "created"}` : exists ? "updated" : "created";
+  console.log(`Lockfile ${action}: ${lockfilePath}${options.dryRun ? " (dry-run)" : ""}`);
   if (lock.sourceLock !== undefined) {
     const binding = lock.sourceLock as SourceLockBinding;
     console.log(
@@ -456,6 +439,13 @@ function writeLockfile(options: BootstrapArgs): string {
 
 function runInstaller(options: BootstrapArgs, lockfilePath: string, deps: RunInstallerDeps = {}): number {
   const args = buildInstallerArgs(options, lockfilePath);
+  // The proposed lock only exists in memory. Running the installer would read
+  // a missing lock, or an unrelated existing lock when --force is supplied.
+  if (options.dryRun) {
+    console.log(`Installer argv (dry-run): ${JSON.stringify(args)}`);
+    console.log("Installation and doctor checks were not run; no files were written.");
+    return 0;
+  }
   const runCommandFn = deps.runCommand || runCommand;
   const exitFn = deps.exit || process.exit;
 
@@ -517,7 +507,6 @@ export {
   buildLockObject,
   detectDefaultRepo,
   detectRemote,
-  isRemoteRepo,
   main,
   parseArgs,
   runInstaller,

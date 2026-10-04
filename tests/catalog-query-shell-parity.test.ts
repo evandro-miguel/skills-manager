@@ -7,7 +7,7 @@ import path from "node:path";
 const REPO_ROOT = path.resolve(__dirname, "..");
 const OPENING_LIST_BLOB = "c5fa46c07b6574ad754b31041ead452788e08e7d";
 const OPENING_FACADE_BLOB = "70c1454de7089c86e0fba4aa8d4deaad9309f40c";
-const CURRENT_FACADE_BLOB = "946d78c56768d207255973794f4af50271410539";
+const CURRENT_FACADE_BLOB = "1df164fe10e692b092392cb07b56ba3401e2d56a";
 const OPENING_METADATA_BLOB = "db34a9ac24922580645e8b3920b3cb056bc75183";
 const CURRENT_LIST = path.join(REPO_ROOT, "scripts", "commands", "list-skills.ts");
 const CURRENT_FACADE = path.join(REPO_ROOT, "scripts", "commands", "skill-sys.ts");
